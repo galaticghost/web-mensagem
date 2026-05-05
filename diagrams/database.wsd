@@ -1,0 +1,53 @@
+@startuml
+skinparam linetype ortho
+
+entity User {
+*user_id: BIGINT <<PK>>
+--
+*username: varchar
+*password: varchar
+*email: varchar
+}
+
+entity Group {
+*id: BIGINT<<PK>>
+--
+*creator_id: BIGINT<<FK>>
+description: text
+}
+
+entity User_Group {
+*user_group_id: BIGINT<<PK>>
+*user_id: BIGINT<<FK>>
+*group_id: BIGINT<<FK>>
+}
+
+entity Group_Admin {
+*group_admin_id: BIGINT <<PK>>
+*admin_id: BIGINT <<FK>>
+*group_id: BIGINT <<FK>>
+}
+
+entity User_Chat {
+*user_chat: BIGINT<<PK>>
+*user1_id: BIGINT<<FK>>
+*user2_id: BIGINT<<FK>>
+}
+
+entity Message {
+*message_id: BIGINT<<PK>>
+*chat: BIGINT<<FK>>
+--
+*created_at: TIMESTAMP
+*message: text
+}
+
+User ||--o{ Group
+User }|--o{ User_Group
+User }|--o{ User_Chat
+User }|--o{ Group_Admin
+Group }|--|{ Group_Admin
+Group }|--o{ User_Group
+Group }|--o{ Message
+User_Chat }|--o{ Message
+@enduml
