@@ -1,6 +1,6 @@
 import type { UserRegister, UserLogin } from "../types/types";
 
-export async function registerUser(data: any) {
+export async function registerUser(data: UserRegister) {
     const url = "http://127.0.0.1:8000/api/register/";
     try {
         const response = await fetch(url, {
@@ -11,8 +11,8 @@ export async function registerUser(data: any) {
             body: JSON.stringify(data)
         })
         if (!response.ok) { throw new Error("Azideia") } //TODO
-
-        return await response.json();
+        const x = await response.json();
+        return x;
 
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -21,7 +21,7 @@ export async function registerUser(data: any) {
     }
 }
 
-export async function loginUser(credentials: any) {
+export async function loginUser(credentials: UserLogin) {
     const url = "http://127.0.0.1:8000/api/login/";
     try {
         const response = await fetch(url, {
@@ -36,7 +36,7 @@ export async function loginUser(credentials: any) {
 
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
-
+        console.log(data);
         return data;
 
     } catch (error: unknown) {
