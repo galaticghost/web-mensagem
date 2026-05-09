@@ -1,7 +1,9 @@
 export default function Chat() {
     return (
-        <>
-            <p>massa</p>
-        </>
+        <main>
+            <section>
+                Chats
+            </section>
+        </main>
     )
 }
