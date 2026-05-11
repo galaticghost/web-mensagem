@@ -10,8 +10,8 @@ class User(AbstractUser):
 
 class Chat(models.Model):
     class ChatType(models.TextChoices):
-        PRIVATE = "private"
-        GROUP = "group"
+        PRIVATE = "private","Private"
+        GROUP = "group", "Group"
     created_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=20,choices=ChatType.choices)
     description = models.TextField(null=True,blank=True)
@@ -27,7 +27,7 @@ class ChatMember(models.Model):
         unique_together = ("chat", "user")
 
 class Message(models.Model):
-    chat = models.ForeignKey(Chat,on_delete=models.CASCADE,related_name="members")
+    chat = models.ForeignKey(Chat,on_delete=models.CASCADE,related_name="messages")
     sender = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=500)

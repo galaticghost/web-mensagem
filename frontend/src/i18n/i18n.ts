@@ -5,7 +5,7 @@ import { initReactI18next } from "react-i18next";
 import ptBR from "./locales/pt-br.json";
 import enUS from "./locales/en-us.json";
 
-i18n.use(LanguageDetector).use(initReactI18next).init({
+export default i18n.use(LanguageDetector).use(initReactI18next).init({
     resources: {
         "pt-BR": {
             translation: ptBR
