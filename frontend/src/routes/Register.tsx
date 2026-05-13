@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { registerUser } from "../service/authService"
+import { register } from "../service/authService"
 import type { UserRegister } from "../types/types";
 import { useNavigate } from "react-router";
 
@@ -13,7 +13,7 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await registerUser(formData);
+            await register(formData);
             setFormData({
                 username: "", email: "", password: "", password2: ""
             });

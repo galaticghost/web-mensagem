@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { loginUser } from "../service/authService"
+import { login } from "../service/authService"
 import type { UserLogin } from "../types/types";
 import { useNavigate } from "react-router";
 
@@ -13,7 +13,8 @@ export default function Login() {
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await loginUser(formData);
+            const user = await login(formData);
+            if(user instanceof Error) { throw new Error("test")}
             setFormData({
                 email: "", password: ""
             });

@@ -1,6 +1,6 @@
 import type { UserRegister, UserLogin } from "../types/types";
 
-export async function registerUser(data: UserRegister) {
+export async function register(formData: UserRegister) {
     const url = "http://127.0.0.1:8000/api/register/";
     try {
         const response = await fetch(url, {
@@ -8,20 +8,23 @@ export async function registerUser(data: UserRegister) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(formData)
         })
-        if (!response.ok) { throw new Error("Azideia") } //TODO
-        const x = await response.json();
-        return x;
+        
+        const data = await response.json();
+        
+        if (!response.ok) { throw new Error(data.detail || "Erro ao registrar") }
 
+        return data;
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error(error.message);
         }
+        throw error
     }
 }
 
-export async function loginUser(credentials: UserLogin) {
+export async function login(credentials: UserLogin) {
     const url = "http://127.0.0.1:8000/api/login/";
     try {
         const response = await fetch(url, {
@@ -31,17 +34,24 @@ export async function loginUser(credentials: UserLogin) {
             },
             body: JSON.stringify(credentials)
         });
-        if (!response.ok) { throw new Error("Azideia") } //TODO
+        
         const data = await response.json();
+        if (!response.ok) { throw new Error(data.detail || "Erro ao fazer login")}
 
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
-        console.log(data);
         return data;
 
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error(error.message);
         }
+        throw error;
     }
+}
+
+export function logout() {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("email");
 }

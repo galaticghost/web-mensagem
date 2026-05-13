@@ -7,26 +7,20 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class UserRegisterView(views.APIView):
     def post(self, request):
         serializer = UserRegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "message": "User registered successfully"
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({
+            "message": "User registered successfully"
+        }, status=status.HTTP_201_CREATED)
 
 class UserLoginView(views.APIView):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data["user"]
-            refresh = RefreshToken.for_user(user)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        refresh = RefreshToken.for_user(user)
 
-            return Response({
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-            })
-
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+        })
