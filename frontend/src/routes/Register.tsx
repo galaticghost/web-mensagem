@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { register } from "../service/authService"
+import { useAuth } from "../hooks/useAuth";
 import type { UserRegister } from "../types/types";
 import { useNavigate } from "react-router";
 
@@ -8,16 +8,18 @@ export default function Register() {
         username: "", email: "", password: "", password2: ""
     });
 
+    const { register } = useAuth();
+
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             await register(formData);
             setFormData({
                 username: "", email: "", password: "", password2: ""
             });
-            navigate("/auth/login");
+            navigate("/chat");
         } catch (error: unknown) {
             if (error instanceof Error) {
                 console.error(error.message);

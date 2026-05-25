@@ -18,4 +18,8 @@ export type AuthContextType = {
     user: User | null;
     accessToken: string | null;
     isAuthenticated: boolean;
+    isLoading: boolean;
+    register: (formData: UserRegister) => Promise<void>;
+    login: (credentials: UserLogin) => Promise<void>;
+    logout: () => void;
 }

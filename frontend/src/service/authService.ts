@@ -10,10 +10,10 @@ export async function register(formData: UserRegister) {
             },
             body: JSON.stringify(formData)
         })
-        
+
         const data = await response.json();
-        
-        if (!response.ok) { throw new Error(data.detail || "Erro ao registrar") }
+
+        if (!response.ok) { throw new Error(data.detail || "Error Register") }
 
         return data;
     } catch (error: unknown) {
@@ -34,12 +34,10 @@ export async function login(credentials: UserLogin) {
             },
             body: JSON.stringify(credentials)
         });
-        
-        const data = await response.json();
-        if (!response.ok) { throw new Error(data.detail || "Erro ao fazer login")}
 
-        localStorage.setItem("access", data.access);
-        localStorage.setItem("refresh", data.refresh);
+        const data = await response.json();
+        if (!response.ok) { throw new Error(data.detail || "Erro ao fazer login") }
+
         return data;
 
     } catch (error: unknown) {
@@ -48,10 +46,4 @@ export async function login(credentials: UserLogin) {
         }
         throw error;
     }
-}
-
-export function logout() {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("email");
 }

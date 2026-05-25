@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login } from "../service/authService"
+import { useAuth } from "../hooks/useAuth";
 import type { UserLogin } from "../types/types";
 import { useNavigate } from "react-router";
 
@@ -8,13 +8,14 @@ export default function Login() {
         email: "", password: ""
     });
 
+    const { login } = useAuth();
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const user = await login(formData);
-            if(user instanceof Error) { throw new Error("test")}
+            await login(formData);
             setFormData({
                 email: "", password: ""
             });
