@@ -1,7 +1,7 @@
 import type { UserRegister, UserLogin } from "../types/types";
 
 export async function register(formData: UserRegister) {
-    const url = "http://127.0.0.1:8000/api/register/";
+    const url = "http://127.0.0.1:8000/api/auth/register";
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -25,7 +25,7 @@ export async function register(formData: UserRegister) {
 }
 
 export async function login(credentials: UserLogin) {
-    const url = "http://127.0.0.1:8000/api/login/";
+    const url = "http://127.0.0.1:8000/api/auth/login";
     try {
         const response = await fetch(url, {
             method: "POST",

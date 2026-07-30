@@ -11,11 +11,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const token = localStorage.getItem("access");
-        const email = localStorage.getItem("email");
+        const storedUser = localStorage.getItem("user");
 
-        if (token && email) {
+        if (token && storedUser) {
             setAccessToken(token);
-            setUser({ email });
+            setUser(JSON.parse(storedUser));
         }
         setIsLoading(false);
     }, []);
@@ -25,13 +25,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setAccessToken(data.access);
 
-        setUser({
-            email: credentials.email
-        });
+        setUser(data.user);
 
         localStorage.setItem("access", data.access);
-        localStorage.setItem("refresh", data.refresh);
-        localStorage.setItem("email", credentials.email);
+        //localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("user", JSON.stringify(data.user));
     }
 
     async function register(formData: UserRegister) {
@@ -47,8 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setAccessToken(null);
         localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("email");
+        //localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
     }
 
     return (

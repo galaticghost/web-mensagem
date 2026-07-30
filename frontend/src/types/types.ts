@@ -12,6 +12,8 @@ export type UserLogin = {
 
 export type User = {
     email: string;
+    username: string;
+    id: Number;
 }
 
 export type AuthContextType = {
