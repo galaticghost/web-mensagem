@@ -5,16 +5,19 @@ import type { User, AuthContextType, UserLogin, UserRegister } from "../types/ty
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [tokenType, setTokenType] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const isAuthenticated = !!accessToken;
 
     useEffect(() => {
-        const token = localStorage.getItem("access");
+        const token = localStorage.getItem("access_token");
         const storedUser = localStorage.getItem("user");
+        const storedTokenType = localStorage.getItem("token_type");
 
         if (token && storedUser) {
             setAccessToken(token);
+            setTokenType(storedTokenType);
             setUser(JSON.parse(storedUser));
         }
         setIsLoading(false);
@@ -23,11 +26,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function login(credentials: UserLogin) {
         const data = await loginRequest(credentials);
 
-        setAccessToken(data.access);
+        setAccessToken(data.access_token);
 
         setUser(data.user);
 
-        localStorage.setItem("access", data.access);
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("token_type", data.token_type);
         //localStorage.setItem("refresh", data.refresh);
         localStorage.setItem("user", JSON.stringify(data.user));
     }
@@ -44,7 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function logout() {
         setUser(null);
         setAccessToken(null);
-        localStorage.removeItem("access");
+        setTokenType(null);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("token_type");
         //localStorage.removeItem("refresh");
         localStorage.removeItem("user");
     }
@@ -54,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             value={{
                 user,
                 accessToken,
+                tokenType,
                 isAuthenticated,
                 isLoading,
                 register,

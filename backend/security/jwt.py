@@ -20,3 +20,11 @@ def create_access_token(data: dict):
     )
 
     return token
+
+def decode_access_token(token: str):
+    try:
+        return jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None

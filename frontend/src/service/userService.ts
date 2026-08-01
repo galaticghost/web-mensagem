@@ -3,7 +3,7 @@ export async function searchUsers(username: string) {
     try {
         const response = await fetch(url);
         const data = await response.json();
-        console.log(data);
+
         if (!response.ok) { throw new Error(data.detail || "Error Register") }
         return data;
     } catch (error: unknown) {

@@ -1,11 +1,12 @@
 from fastapi import status, Depends, HTTPException, APIRouter
+from sqlalchemy.orm import Session
+from pwdlib import PasswordHash
+
 from models import User
 from schema.user import UserCreate,UserLogin
-from sqlalchemy.orm import Session
 from database.database import get_session
 from security.jwt import create_access_token
 from repository.user import UserRepository
-from pwdlib import PasswordHash
 
 password_hash = PasswordHash.recommended()
 
@@ -40,7 +41,8 @@ async def login(
     })
 
     return {"message": "Login realizado com sucesso",
-            "access": token,
+            "access_token": token,
+            "token_type": "bearer",
             "user": {
                 "id": db_user.id,
                 "username": db_user.username,

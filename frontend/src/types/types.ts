@@ -13,15 +13,17 @@ export type UserLogin = {
 export type User = {
     email: string;
     username: string;
-    id: Number;
+    id: number;
 }
 
 export type AuthContextType = {
     user: User | null;
     accessToken: string | null;
+    tokenType: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     register: (formData: UserRegister) => Promise<void>;
     login: (credentials: UserLogin) => Promise<void>;
     logout: () => void;
 }
+

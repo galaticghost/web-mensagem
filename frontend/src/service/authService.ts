@@ -20,7 +20,7 @@ export async function register(formData: UserRegister) {
         if (error instanceof Error) {
             console.error(error.message);
         }
-        throw error
+        throw error;
     }
 }
 

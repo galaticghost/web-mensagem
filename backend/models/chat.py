@@ -1,14 +1,19 @@
 from __future__ import annotations
 from database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, ForeignKey, Boolean, UniqueConstraint
+from sqlalchemy import String, Text, ForeignKey, Boolean, UniqueConstraint, Enum
+
+from models.enums import ChatType
 
 class Chat(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    type: Mapped[str] = mapped_column(String(20))
+    type: Mapped[ChatType] = mapped_column(
+        Enum(ChatType),
+        nullable=False
+    )
 
     description: Mapped[str | None] = mapped_column(
         Text,

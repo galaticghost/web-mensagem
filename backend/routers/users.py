@@ -19,4 +19,4 @@ async def search_users(
     if len(username) < 2:
         return []
     return user_repository.search_by_username(session,username)
-    
+

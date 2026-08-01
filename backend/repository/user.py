@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from models import User
 
 class UserRepository:
+    def get_by_id(self,session: Session, id: int) -> User | None:
+        stmt = select(User).where(User.id == id)
+        return session.scalar(stmt)
+
     def get_by_email(self, session: Session, email: str) -> User | None:
         stmt = select(User).where(User.email == email)
         return session.scalar(stmt)
