@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select,func
 
 from models import Chat,ChatMember,ChatType
 
@@ -34,3 +35,21 @@ class ChatRepository:
         session.commit()
         
         return chat
+
+    def find_private_chat_between_users(
+            self,
+            session: Session,
+            user_id_1: int,
+            user_id_2: int
+        ):
+        stmt = (select(Chat)
+                .join(Chat.members)
+                .where(
+                    Chat.type == ChatType.PRIVATE,
+                    ChatMember.user_id.in_([user_id_1,user_id_2])
+                )
+                .group_by(Chat.id)
+                .having(func.count(ChatMember.user_id) == 2)
+        )
+        return session.scalar(stmt)
+        
