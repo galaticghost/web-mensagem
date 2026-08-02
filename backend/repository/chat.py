@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select,func,exists
 
-from models import Chat,ChatMember,ChatType
+from models import Chat,ChatMember,ChatType,User
 
 class ChatRepository:
     def create_private_chat(
@@ -67,3 +67,17 @@ class ChatRepository:
         )
         
         return session.scalar(stmt)
+
+    def get_users_in_chat(
+            self,
+            session: Session,
+            chat_id: int
+    ):
+        stmt = (select(User)
+                .join(User.chats)
+                .where(
+                    ChatMember.chat_id == chat_id
+                )
+            )
+
+        return session.scalars(stmt).all()

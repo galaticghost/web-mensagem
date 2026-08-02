@@ -16,3 +16,14 @@ class MessageRepository:
         )
 
         return session.scalars(stmt).all()
+
+    def create(
+            self,
+            session: Session,
+            message: Message
+        ):
+        session.add(message)
+        session.commit()
+        session.refresh(message)
+
+        return message

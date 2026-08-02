@@ -25,7 +25,7 @@ def get_current_user(
         )
 
     user_id = payload.get("sub")
-    print(user_id)
+
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,11 +33,29 @@ def get_current_user(
         )
 
     user = user_repository.get_by_id(session, int(user_id))
-    print(user)
+
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário não encontrado"
         )
 
+    return user
+
+def get_user_from_token(
+        session: Session,
+        token: str
+):
+    payload = decode_access_token(token)
+
+    if payload is None:
+        return None
+
+    user_id = payload.get("sub")
+
+    if user_id is None:
+        return None
+
+    user = user_repository.get_by_id(session, int(user_id))
+    
     return user

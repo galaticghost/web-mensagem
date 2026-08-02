@@ -26,8 +26,8 @@ class Message(Base):
 
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
 
-    chat: Mapped["Chat"] = relationship(back_populates="chats")
+    chat: Mapped["Chat"] = relationship(back_populates="messages")
 
     sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    sender: Mapped["User"] = relationship(back_populates="users")
+    sender: Mapped["User"] = relationship(back_populates="messages")

@@ -31,6 +31,8 @@ class Chat(Base):
 
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
+    messages: Mapped[list["Message"]] = relationship(back_populates="chat")
+
 class ChatMember(Base):
     __tablename__ = "chat_members"
 

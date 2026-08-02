@@ -74,3 +74,15 @@ class ChatService:
 
         return {"messages": chat_history}
 
+    def get_users_in_chat(
+            self,
+            session: Session,
+            chat_id: int
+    ):
+        users = self.chat_repository.get_users_in_chat(
+            session=session,
+            chat_id=chat_id
+        )
+
+        return {"users": users}
+
