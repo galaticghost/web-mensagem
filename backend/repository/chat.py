@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,func
+from sqlalchemy import select,func,exists
 
 from models import Chat,ChatMember,ChatType
 
@@ -52,4 +52,18 @@ class ChatRepository:
                 .having(func.count(ChatMember.user_id) == 2)
         )
         return session.scalar(stmt)
+
+    def user_exists_in_chat(
+            self,
+            session: Session,
+            user_id: int,
+            chat_id: int
+    ):
+        stmt = select(
+            exists().where(
+                ChatMember.chat_id == chat_id,
+                ChatMember.user_id == user_id
+            )
+        )
         
+        return session.scalar(stmt)

@@ -25,3 +25,15 @@ async def create_private_chat(
         data=data,
         current_user=current_user
     )
+
+@router.get("/{chat_id}/messages")
+async def get_message_history(
+    chat_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    return chat_service.get_message_history(
+        session=session,
+        chat_id=chat_id,
+        current_user=current_user
+    )

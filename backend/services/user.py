@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from pwdlib import PasswordHash
 
-from repository.user import UserRepository
+from repository import UserRepository
 from models import User
 from security.jwt import create_access_token
 from schema.user import UserCreate,UserLogin
