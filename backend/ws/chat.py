@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, Depends
+from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
 from security.dependencies import get_user_from_token
@@ -32,25 +32,27 @@ async def websocket(
         return
 
     await connection_manager.connect(websocket,user.id)
-    
-    while True:
-        data = await websocket.receive_json()
-        print(connection_manager.active_connections)
-        message = message_service.send_message(
-            session=session,
-            content=data["message"],
-            chat_id=data["chat_id"],
-            user=user
-        )
+    try:
+        while True:
+            data = await websocket.receive_json()
 
-        users = chat_repository.get_users_in_chat(
-            session=session,
-            chat_id=data["chat_id"]
-        )
+            message = message_service.send_message(
+                session=session,
+                content=data["message"],
+                chat_id=data["chat_id"],
+                user=user
+            )
 
-        await connection_manager.send_to_chat_members(
-            session=session,
-            users=users,
-            message=message
-        )
+            users = chat_repository.get_users_in_chat(
+                session=session,
+                chat_id=data["chat_id"]
+            )
+
+            await connection_manager.send_to_chat_members(
+                session=session,
+                users=users,
+                message=message
+            )
+    except WebSocketDisconnect:
+        connection_manager.disconnect()
         

@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from repository import ChatRepository, UserRepository, MessageRepository 
-from models import User
-from schema.chat import CreatePrivateChat
+from models import User,ChatType
+from schema.chat import CreatePrivateChat, ChatListResponse, ChatListItem
 
 class ChatService:
     def __init__(self):
@@ -71,7 +71,7 @@ class ChatService:
             session=session,
             chat_id=chat_id
         )
-
+        #TODO retornar direito
         return {"messages": chat_history}
 
     def get_users_in_chat(
@@ -83,6 +83,36 @@ class ChatService:
             session=session,
             chat_id=chat_id
         )
-
+        #TODO retornar direito
         return {"users": users}
 
+    def get_user_chats(
+            self,
+            session: Session,
+            user: User
+    ):
+        chats = self.chat_repository.get_user_chats(
+            session=session,
+            user_id=user.id
+        )
+
+        chat_items = []
+
+        for chat in chats:
+            if chat.type == ChatType.PRIVATE:
+                for member in chat.members:
+                    if user.id != member.user_id:
+                        display_name = member.user.username
+                        break
+            else:
+                display_name = chat.name
+            chat_items.append(
+                ChatListItem(
+                    id=chat.id,
+                    description=chat.description,
+                    type=chat.type,
+                    display_name=display_name
+                )
+            )
+
+        return ChatListResponse(chats=chat_items)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
 
 from security.dependencies import get_current_user
-from schema.chat import CreatePrivateChat
+from schema.chat import CreatePrivateChat, ChatListResponse
 from models import User
 from services.chat import ChatService
 from database.database import get_session
@@ -36,4 +36,14 @@ async def get_message_history(
         session=session,
         chat_id=chat_id,
         current_user=current_user
+    )
+
+@router.get("/userchats",response_model=ChatListResponse)
+async def get_user_chats(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    return chat_service.get_user_chats(
+        session=session,
+        user=current_user
     )

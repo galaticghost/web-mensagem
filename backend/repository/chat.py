@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,selectinload
 from sqlalchemy import select,func,exists
 
 from models import Chat,ChatMember,ChatType,User
@@ -75,8 +75,22 @@ class ChatRepository:
     ):
         stmt = (select(User)
                 .join(User.chats)
-                .where(
-                    ChatMember.chat_id == chat_id
+                .where(ChatMember.chat_id == chat_id)
+            )
+
+        return session.scalars(stmt).all()
+
+    def get_user_chats(
+            self,
+            session: Session,
+            user_id: int
+    ):
+        stmt = (select(Chat)
+                .join(Chat.members)
+                .where(ChatMember.user_id == user_id)
+                .options(
+                    selectinload(Chat.members)
+                    .selectinload(ChatMember.user)
                 )
             )
 
