@@ -1,0 +1,39 @@
+import type { SendMessage, RecivedMessage } from "../types/types";
+
+class WebSocketService {
+    private websocket: WebSocket | null = null
+
+    connect(access_token: string) {
+        const url = `ws://127.0.0.1:8000/ws/user?token=${access_token}`;
+
+        if (this.websocket) {
+            return;
+        }
+
+        this.websocket = new WebSocket(url);
+    }
+
+    disconnect() {
+        this.websocket?.close();
+        this.websocket = null;
+    }
+
+    send(data: SendMessage) {
+        this.websocket?.send(JSON.stringify({
+            "message": data.message,
+            "chat_id": data.chatId
+        }))
+    }
+
+    onMessage(callback: (data: RecivedMessage) => void) {
+        if (!this.websocket) {
+            throw new Error("WebSocket não conectado");
+        }
+        this.websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            callback(data);
+        };
+    }
+}
+
+export const websocket = new WebSocketService();

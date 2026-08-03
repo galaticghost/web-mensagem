@@ -5,10 +5,10 @@ from security.dependencies import get_user_from_token
 from services.message import MessageService
 from services.chat import ChatRepository
 from database.database import get_session
-from websockets.connection_manager import connection_manager
+from ws.connection_manager import connection_manager
 
 router = APIRouter(
-    prefix="/ws/",
+    prefix="/ws",
     tags=["chatws"] #TOCHANGE
 )
 
@@ -18,9 +18,10 @@ chat_repository = ChatRepository()
 @router.websocket("/user")
 async def websocket(
     websocket: WebSocket,
-    token: str,
     session: Session = Depends(get_session),
-):
+):  
+    token = websocket.query_params.get("token")
+    
     user = get_user_from_token(
         session=session,
         token=token,
@@ -30,12 +31,11 @@ async def websocket(
         await websocket.close(code=1008)
         return
 
-    await connection_manager.connect(websocket)
+    await connection_manager.connect(websocket,user.id)
     
     while True:
         data = await websocket.receive_json()
-
-
+        print(connection_manager.active_connections)
         message = message_service.send_message(
             session=session,
             content=data["message"],

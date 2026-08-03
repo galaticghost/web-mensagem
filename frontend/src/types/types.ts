@@ -27,3 +27,16 @@ export type AuthContextType = {
     logout: () => void;
 }
 
+export type SendMessage = {
+    message: string;
+    chatId: number;
+}
+
+export type RecivedMessage = {
+    id: number;
+    message: string;
+    chat_id: number;
+    sender_id: number;
+    created_at: string;
+}
+

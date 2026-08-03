@@ -1,0 +1,4 @@
+.chat-window{
+    border: 1px solid red;
+    grid-area: "chatWindow";
+}

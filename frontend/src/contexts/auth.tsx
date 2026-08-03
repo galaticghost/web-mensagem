@@ -1,5 +1,6 @@
-import { createContext, useEffect, useState, type ReactNode } from "react"
-import { login as loginRequest, register as registerRequest } from "../service/authService"
+import { createContext, useEffect, useState, type ReactNode } from "react";
+import { login as loginRequest, register as registerRequest } from "../service/authService";
+import { websocket } from "../websockets/socket";
 import type { User, AuthContextType, UserLogin, UserRegister } from "../types/types";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -34,6 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("token_type", data.token_type);
         //localStorage.setItem("refresh", data.refresh);
         localStorage.setItem("user", JSON.stringify(data.user));
+
+        await websocket.connect(data.access_token);
     }
 
     async function register(formData: UserRegister) {
@@ -53,6 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("token_type");
         //localStorage.removeItem("refresh");
         localStorage.removeItem("user");
+
+        websocket.disconnect();
     }
 
     return (

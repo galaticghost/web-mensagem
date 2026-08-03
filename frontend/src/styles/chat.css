@@ -1,0 +1,5 @@
+.chat {
+    display: grid;
+    grid-template-areas: "chatSidebar chatWindow";
+    grid-template-columns: 1fr 2fr;
+}
