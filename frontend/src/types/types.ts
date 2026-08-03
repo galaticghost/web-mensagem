@@ -40,3 +40,10 @@ export type RecivedMessage = {
     created_at: string;
 }
 
+export type Chat = {
+    id: number;
+    type: string;
+    display_name: string;
+    description: string | null;
+}
+

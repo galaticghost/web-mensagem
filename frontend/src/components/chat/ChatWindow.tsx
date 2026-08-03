@@ -1,11 +1,22 @@
 import "../../styles/chatWindow.css";
 
-export default function ChatWindow() {
+interface ChatWindowProps {
+    chatId: number | null;
+}
 
+export default function ChatWindow({ chatId }: ChatWindowProps) {
+
+    if (!chatId) {
+        return (
+            <section className="chat-window">
+                <p>Teste</p>
+            </section>
+        )
+    }
 
     return (
         <section className="chat-window">
-            <p>Teste</p>
+            Chat selecionado: {chatId}
         </section>
     )
 }
