@@ -1,10 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from pwdlib import PasswordHash
+from datetime import datetime, timedelta, timezone
 
-from repository import UserRepository
-from models import User
-from security.jwt import create_access_token
+from repository import UserRepository,RefreshTokenRepository
+from models import User, RefreshToken
+from security.jwt import create_access_token, create_refresh_token, hash_token
 from schema.user import UserCreate,UserLogin
 
 password_hash = PasswordHash.recommended()
@@ -12,6 +13,7 @@ password_hash = PasswordHash.recommended()
 class UserService:
     def __init__(self):
         self.user_repository = UserRepository()
+        self.refresh_token_repository = RefreshTokenRepository()
 
     def register(self, session: Session, data: UserCreate):
         if self.user_repository.get_by_email(session,data.email) is not None:
@@ -50,12 +52,25 @@ class UserService:
                 detail="Email ou senha inválidos"
             ) 
 
-        token = create_access_token({
-            "sub": str(db_user.id)
-        })
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=30)
+
+        refresh = create_refresh_token(db_user.id,expires_at)
+
+        token = create_access_token(db_user.id)
+
+        self.refresh_token_repository.create(
+            session=session,
+            refresh=RefreshToken(
+                user_id=db_user.id,
+                token_hash=hash_token(refresh),
+                expires_at=expires_at,
+                revoked=False
+            )
+        )
 
         return {"message": "Login realizado com sucesso",
                 "access_token": token,
+                "refresh_token": refresh,
                 "token_type": "bearer",
                 "user": {
                     "id": db_user.id,

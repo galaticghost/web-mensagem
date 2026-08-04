@@ -22,21 +22,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(JSON.parse(storedUser));
         }
         setIsLoading(false);
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        if (!accessToken) {
+            websocket.disconnect();
+            return;
+        }
+        websocket.connect(accessToken);
+
+        return () => {
+            websocket.disconnect();
+        }
+    }, [accessToken]);
 
     async function login(credentials: UserLogin) {
         const data = await loginRequest(credentials);
 
         setAccessToken(data.access_token);
-
+        setTokenType(data.token_type);
         setUser(data.user);
 
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("token_type", data.token_type);
         //localStorage.setItem("refresh", data.refresh);
         localStorage.setItem("user", JSON.stringify(data.user));
-
-        await websocket.connect(data.access_token);
     }
 
     async function register(formData: UserRegister) {
@@ -52,12 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setAccessToken(null);
         setTokenType(null);
+
         localStorage.removeItem("access_token");
         localStorage.removeItem("token_type");
         //localStorage.removeItem("refresh");
         localStorage.removeItem("user");
-
-        websocket.disconnect();
     }
 
     return (

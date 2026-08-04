@@ -1,7 +1,8 @@
 from __future__ import annotations
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String
+from sqlalchemy import String, ForeignKey
 from database.database import Base
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -30,6 +31,11 @@ class User(Base):
 
     messages: Mapped[list["Message"]] = relationship(
         back_populates="sender"
+    )
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user",
+        cascade="all, delete orphan"
     )
 
     def __repr__(self) -> str:
