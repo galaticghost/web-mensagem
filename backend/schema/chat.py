@@ -7,7 +7,7 @@ class CreatePrivateChat(BaseModel):
 
 class ChatReponse(BaseModel):
     id: int
-    display_name: int
+    display_name: str
     description: str | None
     type: ChatType
 

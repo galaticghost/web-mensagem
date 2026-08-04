@@ -32,7 +32,7 @@ export type SendMessage = {
     chatId: number;
 }
 
-export type RecivedMessage = {
+export type ReceivedMessage = {
     id: number;
     message: string;
     chat_id: number;

@@ -1,4 +1,4 @@
-import type { SendMessage, RecivedMessage } from "../types/types";
+import type { SendMessage, ReceivedMessage } from "../types/types";
 
 class WebSocketService {
     private websocket: WebSocket | null = null
@@ -19,13 +19,16 @@ class WebSocketService {
     }
 
     send(data: SendMessage) {
-        this.websocket?.send(JSON.stringify({
+        if (!this.websocket) {
+            throw new Error("WebSocket não conectado");
+        }
+        this.websocket.send(JSON.stringify({
             "message": data.message,
             "chat_id": data.chatId
         }))
     }
 
-    onMessage(callback: (data: RecivedMessage) => void) {
+    onMessage(callback: (data: ReceivedMessage) => void) {
         if (!this.websocket) {
             throw new Error("WebSocket não conectado");
         }

@@ -1,4 +1,26 @@
 .chat-window{
     border: 1px solid red;
     grid-area: "chatWindow";
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.message-div {
+    overflow-y: scroll;
+    height: (100% - 660px);
+}
+
+.message {
+    
+}
+
+.message > p {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.message-right{
+    align-self: flex-end;
 }

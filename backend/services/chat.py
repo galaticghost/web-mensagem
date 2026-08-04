@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from repository import ChatRepository, UserRepository, MessageRepository 
 from models import User,ChatType
 from schema.chat import CreatePrivateChat, ChatListResponse, ChatListItem
+from schema.message import MessageListItem, MessageListResponse
 
 class ChatService:
     def __init__(self):
@@ -71,8 +72,18 @@ class ChatService:
             session=session,
             chat_id=chat_id
         )
-        #TODO retornar direito
-        return {"messages": chat_history}
+        chat_messages = []
+        for message in chat_history:
+            chat_messages.append(MessageListItem(
+                id=message.id,
+                message=message.message,
+                chat_id=message.chat_id,
+                sender_id=message.sender_id,
+                created_at=message.created_at
+            ))
+        return MessageListResponse(
+            messages=chat_messages
+        )
 
     def get_users_in_chat(
             self,
@@ -83,7 +94,6 @@ class ChatService:
             session=session,
             chat_id=chat_id
         )
-        #TODO retornar direito
         return {"users": users}
 
     def get_user_chats(

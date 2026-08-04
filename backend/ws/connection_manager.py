@@ -32,13 +32,16 @@ class ConnectionManager:
             if ws_list is None:
                 continue
             for ws_conn in ws_list:
-                await ws_conn.send_json({
-                    "id": message.id,
-                    "message": message.message,
-                    "chat_id": message.chat_id,
-                    "sender_id": message.sender_id,
-                    "created_at": message.created_at.isoformat()
-                })
+                try:
+                    await ws_conn.send_json({
+                        "id": message.id,
+                        "message": message.message,
+                        "chat_id": message.chat_id,
+                        "sender_id": message.sender_id,
+                        "created_at": message.created_at.isoformat()
+                    })
+                except Exception:
+                    self.disconnect(ws_conn, user.id)
 
 connection_manager = ConnectionManager()
                 

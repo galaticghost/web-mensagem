@@ -49,10 +49,9 @@ async def websocket(
             )
 
             await connection_manager.send_to_chat_members(
-                session=session,
                 users=users,
                 message=message
             )
     except WebSocketDisconnect:
-        connection_manager.disconnect()
+        connection_manager.disconnect(websocket,user.id)
         

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from security.dependencies import get_current_user
 from schema.chat import CreatePrivateChat, ChatListResponse
+from schema.message import MessageListResponse
 from models import User
 from services.chat import ChatService
 from database.database import get_session
@@ -26,7 +27,7 @@ async def create_private_chat(
         current_user=current_user
     )
 
-@router.get("/{chat_id}/messages")
+@router.get("/{chat_id}/messages",response_model=MessageListResponse)
 async def get_message_history(
     chat_id: int,
     session: Session = Depends(get_session),
