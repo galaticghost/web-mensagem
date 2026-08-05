@@ -51,7 +51,9 @@ class WebSocketService {
 
     onMessage(callback: (data: ReceivedMessage) => void) {
         if (!this.websocket) {
-            throw new Error("WebSocket não conectado");
+            // Isso daqui meio que quebra e não permite a reconexão
+            //throw new Error("WebSocket não conectado");
+            return
         }
         this.websocket.onmessage = (event) => {
             const data = JSON.parse(event.data);

@@ -60,7 +60,7 @@ class UserService:
 
         self.refresh_token_repository.create(
             session=session,
-            refresh=RefreshToken(
+            token=RefreshToken(
                 user_id=db_user.id,
                 token_hash=hash_token(refresh),
                 expires_at=expires_at,
