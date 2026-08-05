@@ -2,8 +2,7 @@ from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
 
 from security.dependencies import get_current_user
-from schema.chat import CreatePrivateChat, ChatListResponse
-from schema.message import MessageListResponse
+from schema import CreatePrivateChat, ChatListResponse,MessageListResponse
 from models import User
 from services.chat import ChatService
 from database.database import get_session

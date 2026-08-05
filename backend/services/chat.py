@@ -1,10 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from repository import ChatRepository, UserRepository, MessageRepository 
+from repository import ChatRepository,UserRepository,MessageRepository 
 from models import User,ChatType
-from schema.chat import CreatePrivateChat, ChatListResponse, ChatListItem
-from schema.message import MessageListItem, MessageListResponse
+from schema import CreatePrivateChat,ChatListResponse, ChatListItem,MessageListItem, MessageListResponse
 
 class ChatService:
     def __init__(self):
@@ -12,6 +11,10 @@ class ChatService:
         self.user_repository = UserRepository()
         self.message_repository = MessageRepository()
 
+    """
+    Cria um chat privado entre o usuário atual
+    e outro usuário com base no id do outro usuário
+    """
     def create_private_chat(
             self, 
             session: Session, 
@@ -22,7 +25,7 @@ class ChatService:
         if data.user_id == current_user.id:
             raise HTTPException(
                 status_code=400,
-                detail="Não é possível criar um chat consigo mesmo."
+                detail="CANNOT_CHAT_WITH_YOURSELF"
             )
         
         if self.chat_repository.find_private_chat_between_users(
@@ -32,13 +35,13 @@ class ChatService:
         ) is not None:
             raise HTTPException(
                 status_code=400,
-                detail="O chat entre os dois já existe"
+                detail="CHAT_ALREADY_EXISTS"
             )
         
         if self.user_repository.get_by_id(session,data.user_id) is None:
             raise HTTPException(
                 status_code=404,
-                detail="Usuário não encontrado"
+                detail="USER_NOT_FOUND"
             )
             
         chat = self.chat_repository.create_private_chat(
@@ -52,6 +55,10 @@ class ChatService:
             "chat_id":chat.id
         }
 
+    """
+    Pega as mensagens passadas de um chat em que
+    o usuário atual esteja participando
+    """
     def get_message_history(
             self,
             session: Session,
@@ -65,7 +72,7 @@ class ChatService:
         ):
             raise HTTPException(
                 status_code=403,
-                detail="O usuário não pertence a esse chat"
+                detail="USER_NOT_IN_CHAT"
             )
 
         chat_history = self.message_repository.get_chat_history(
@@ -85,17 +92,22 @@ class ChatService:
             messages=chat_messages
         )
 
+    """
+    Retorna os usuários em um chat
+    """
     def get_users_in_chat(
             self,
             session: Session,
             chat_id: int
-    ):
-        users = self.chat_repository.get_users_in_chat(
+    ) -> list[User]:
+        return self.chat_repository.get_users_in_chat(
             session=session,
             chat_id=chat_id
         )
-        return {"users": users}
 
+    """
+    Retorna os chats do usuário
+    """
     def get_user_chats(
             self,
             session: Session,
@@ -109,6 +121,8 @@ class ChatService:
         chat_items = []
 
         for chat in chats:
+            #Caso o chat seja privado o nome do chat será do outro usuário
+            #Isso porque um chat privado não tem nome na database
             if chat.type == ChatType.PRIVATE:
                 for member in chat.members:
                     if user.id != member.user_id:
@@ -116,6 +130,7 @@ class ChatService:
                         break
             else:
                 display_name = chat.name
+
             chat_items.append(
                 ChatListItem(
                     id=chat.id,

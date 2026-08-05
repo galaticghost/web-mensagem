@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from repository import UserRepository,RefreshTokenRepository
 from models import User, RefreshToken
 from security.jwt import create_access_token, create_refresh_token, hash_token
-from schema.user import UserCreate,UserLogin
+from schema import UserCreate,UserLogin,RefreshRequest
 
 password_hash = PasswordHash.recommended()
 
@@ -19,13 +19,13 @@ class UserService:
         if self.user_repository.get_by_email(session,data.email) is not None:
                 raise HTTPException(
                     status_code=409,
-                    detail="Já existe um usuário cadastrado com esse email"
+                    detail="EMAIL_ALREADY_EXISTS"
                 )
         
         if self.user_repository.get_by_username(session,data.username) is not None:
             raise HTTPException(
                 status_code=409,
-                detail="Já existe um usuário cadastrado com esse nome de usuário"
+                detail="USERNAME_ALREADY_EXISTS"
             )
     
         user = User(
@@ -43,13 +43,13 @@ class UserService:
         if db_user is None:
             raise HTTPException(
                 status_code=401,
-                detail="Email ou senha inválidos"
+                detail="EMAIL_OR_PASSWORD_INVALID"
             )
 
         if not password_hash.verify(data.password,db_user.password_hash):
             raise HTTPException(
                 status_code=401,
-                detail="Email ou senha inválidos"
+                detail="EMAIL_OR_PASSWORD_INVALID"
             ) 
 
         expires_at = datetime.now(timezone.utc) + timedelta(hours=30)
@@ -82,3 +82,10 @@ class UserService:
         if len(username) < 2:
             return []
         return self.user_repository.search_by_username(session,username)
+
+    def refresh_token(
+            self,
+            session: Session,
+            token: RefreshRequest
+    ):
+        pass

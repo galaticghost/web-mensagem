@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 
 from security.dependencies import get_user_from_token
 from services.message import MessageService
-from services.chat import ChatRepository
+from services.chat import ChatService
 from database.database import get_session
 from ws.connection_manager import connection_manager
+from errors import MessageError,ChatError
 
 router = APIRouter(
     prefix="/ws",
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 message_service = MessageService()
-chat_repository = ChatRepository()
+chat_service = ChatService()
 
 @router.websocket("/user")
 async def websocket(
@@ -36,14 +37,26 @@ async def websocket(
         while True:
             data = await websocket.receive_json()
 
-            message = message_service.send_message(
-                session=session,
-                content=data["message"],
-                chat_id=data["chat_id"],
-                user=user
-            )
+            try:
+                message = message_service.send_message(
+                    session=session,
+                    content=data["message"],
+                    chat_id=data["chat_id"],
+                    user=user
+                )
+            except MessageError as e:
+                await websocket.send_json({
+                    "type": "error",
+                    "code": e.code
+                })
 
-            users = chat_repository.get_users_in_chat(
+            except ChatError as e:
+                await websocket.send_json({
+                    "type": "error",
+                    "code": e.code
+                })
+
+            users = chat_service.get_users_in_chat(
                 session=session,
                 chat_id=data["chat_id"]
             )
@@ -52,6 +65,7 @@ async def websocket(
                 users=users,
                 message=message
             )
+
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket,user.id)
         

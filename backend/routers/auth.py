@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from database.database import get_session
 from services.user import UserService
-from schema.user import UserLogin, UserCreate
+from schema import UserLogin, UserCreate,RefreshRequest
 
 user_service = UserService()
 
@@ -23,6 +23,15 @@ async def login(
 async def register(
     data: UserCreate,
     session: Session = Depends(get_session)
-    ):
+):
     return user_service.register(session,data)
-    
+
+@router.post("/refresh", status_code=status.HTTP_200_OK)
+async def refresh_token(
+    data: RefreshRequest,
+    session: Session = Depends(get_session)
+):
+    return user_service.refresh_token(
+        session=session,
+        data=data
+    )
