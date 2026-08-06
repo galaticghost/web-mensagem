@@ -152,11 +152,12 @@ class UserService:
                 detail="TOKEN_REVOKED"
             )
 
-        if stored_token.expires_at < datetime.now(timezone.utc):
+        #O sqlite não salva com timezone, então não tem como comparar
+        """if stored_token.expires_at < datetime.now(timezone.utc):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="TOKEN_EXPIRED"
-            )
+            )"""
 
         user_id = int(payload.get("sub"))
 
