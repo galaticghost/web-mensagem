@@ -29,7 +29,7 @@ class RefreshTokenRepository:
             self,
             session: Session,
             user_id: int
-    ):
+    ):  
         stmt = (select(RefreshToken)
                 .where(
                     RefreshToken.user_id == user_id,

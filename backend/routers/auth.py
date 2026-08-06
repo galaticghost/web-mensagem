@@ -14,24 +14,24 @@ router = APIRouter(
 
 @router.post("/login",status_code=status.HTTP_200_OK)
 async def login(
-    data: UserLogin,
+    request: UserLogin,
     session: Session = Depends(get_session)
 ):
-    return user_service.login(session,data)
+    return user_service.login(session,request)
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(
-    data: UserCreate,
+    request: UserCreate,
     session: Session = Depends(get_session)
 ):
-    return user_service.register(session,data)
+    return user_service.register(session,request)
 
 @router.post("/refresh", status_code=status.HTTP_200_OK)
 async def refresh(
-    data: RefreshRequest,
+    request: RefreshRequest,
     session: Session = Depends(get_session)
 ):
     return user_service.refresh_token(
         session=session,
-        data=data
+        token=request.refresh_token
     )
