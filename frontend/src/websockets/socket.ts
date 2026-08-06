@@ -39,14 +39,33 @@ class WebSocketService {
         this.websocket = null;
     }
 
-    send(data: SendMessage) {
+    sendMessage(data: SendMessage) {
         if (!this.websocket) {
             throw new Error("WebSocket não conectado");
         }
         this.websocket.send(JSON.stringify({
-            "message": data.message,
-            "chat_id": data.chatId
+                "type":"message",
+                "content":{
+                    "message": data.message,
+                    "chat_id": data.chatId
+                }
+        
         }))
+    }
+
+    sendToken() {
+        if (!this.websocket) {
+            throw new Error("WebSocket não conectado");
+        }
+        const refreshToken = localStorage.getItem("refresh_token");
+
+        this.websocket.send(JSON.stringify({
+                "type":"refresh",
+                "content":{
+                    "refresh_token": refreshToken
+                }
+            })
+        )
     }
 
     onMessage(callback: (data: ReceivedMessage) => void) {

@@ -47,34 +47,36 @@ async def websocket(
         while True:
             data = await websocket.receive_json()
 
-            try:
-                message = message_service.send_message(
-                    session=session,
-                    content=data["message"],
-                    chat_id=data["chat_id"],
-                    user=user
-                )
-            except MessageError as e:
-                await websocket.send_json({
-                    "type": "error",
-                    "code": e.code
-                })
+            match (data["type"]):
+                case "message":
+                    try:
+                        message = message_service.send_message(
+                            session=session,
+                            content=data["message"],
+                            chat_id=data["chat_id"],
+                            user=user
+                        )
+                    except MessageError as e:
+                        await websocket.send_json({
+                            "type": "error",
+                            "code": e.code
+                        })
 
-            except ChatError as e:
-                await websocket.send_json({
-                    "type": "error",
-                    "code": e.code
-                })
+                    except ChatError as e:
+                        await websocket.send_json({
+                            "type": "error",
+                            "code": e.code
+                        })
 
-            users = chat_service.get_users_in_chat(
-                session=session,
-                chat_id=data["chat_id"]
-            )
+                    users = chat_service.get_users_in_chat(
+                        session=session,
+                        chat_id=data["chat_id"]
+                    )
 
-            await connection_manager.send_to_chat_members(
-                users=users,
-                message=message
-            )
+                    await connection_manager.send_to_chat_members(
+                        users=users,
+                        message=message
+                    )
 
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket,user.id)

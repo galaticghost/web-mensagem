@@ -38,7 +38,7 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
             return;
         }
 
-        await websocket.send({
+        await websocket.sendMessage({
             "message": message,
             "chatId": chatId
         });
