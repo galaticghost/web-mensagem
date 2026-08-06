@@ -22,6 +22,13 @@ async def websocket(
     session: Session = Depends(get_session),
 ):  
     token = websocket.query_params.get("token")
+
+    if token is None:
+        await websocket.close(
+            code=4002,
+            reason="TOKEN_MISSING"
+        )
+        return
     
     user = get_user_from_token(
         session=session,
@@ -29,7 +36,10 @@ async def websocket(
     )
 
     if user is None:
-        await websocket.close(code=1008)
+        await websocket.close(
+            code=4001,
+            reason="TOKEN_EXPIRED"
+        )
         return
 
     await connection_manager.connect(websocket,user.id)

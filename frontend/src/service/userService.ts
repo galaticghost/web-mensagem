@@ -1,15 +1,8 @@
-export async function searchUsers(username: string) {
-    const url = `http://127.0.0.1:8000/api/users/search?username=${encodeURIComponent(username)}`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+import { API_URL } from "../config";
+import { authorizedFetch } from "../utils/utils";
 
-        if (!response.ok) { throw new Error(data.detail || "Error Register") }
-        return data;
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-        throw error
-    }
+export async function searchUsers(username: string) {
+    const url = `${API_URL}/api/users/search?username=${encodeURIComponent(username)}`;
+    const response = await authorizedFetch(url);
+    return response.json();
 }

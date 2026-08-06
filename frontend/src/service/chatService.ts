@@ -1,75 +1,34 @@
+import { API_URL } from "../config";
+import { authorizedFetch } from "../utils/utils";
+
 export async function createPrivateChat(userId: number) {
-    const url = "http://127.0.0.1:8000/api/chats/private";
+    const url = `${API_URL}/api/chats/private`;
 
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `${localStorage.getItem("token_type")} ${localStorage.getItem("access_token")}`
-            },
-            body: JSON.stringify({
-                user_id: userId // id do usuário que se queira criar um chat
-            })
-        });
+    const response = await authorizedFetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `${localStorage.getItem("token_type")} ${localStorage.getItem("access_token")}`
+        },
+        body: JSON.stringify({
+            user_id: userId // id do usuário que se queira criar um chat
+        })
+    });
 
-        const data = await response.json();
-        //TODO CHANGE ERROR MESSAGES FOR EVERYTHING
-        if (!response.ok) { throw new Error(data.detail || "Error register"); }
-
-        return data;
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-        throw error;
-    }
-
+    return response.json();
 }
 
 export async function getUserChats() {
-    const url = "http://127.0.0.1:8000/api/chats/userchats";
+    const url = `${API_URL}/api/chats/userchats`;
+    const response = await authorizedFetch(url);
 
-    try {
-        const response = await fetch(url, {
-            headers: {
-                "Authorization": `${localStorage.getItem("token_type")} ${localStorage.getItem("access_token")}`
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) { throw new Error(data.detail || "Error register"); }
-
-        return data;
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-        throw error;
-    }
+    return response.json();
 }
 
 export async function getMessageHistory(chatId: number) {
-    const url = `http://127.0.0.1:8000/api/chats/${chatId}/messages`;
+    const url = `${API_URL}/api/chats/${chatId}/messages`;
 
-    try {
-        const response = await fetch(url, {
-            headers: {
-                "Authorization": `${localStorage.getItem("token_type")} ${localStorage.getItem("access_token")}`
-            },
-        });
+    const response = await authorizedFetch(url);
 
-        const data = await response.json();
-
-        if (!response.ok) { throw new Error(data.detail || "Error register"); }
-
-        return data;
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-        throw error;
-    }
-
+    return response.json();
 }

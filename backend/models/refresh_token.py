@@ -1,6 +1,6 @@
 from __future__ import annotations
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, DateTime
 from database.database import Base
 from datetime import datetime
 
@@ -12,6 +12,9 @@ class RefreshToken(Base):
     user: Mapped["User"] = relationship(back_populates="refresh_tokens",)
 
     token_hash: Mapped[str] = mapped_column(String(64))
-    expires_at: Mapped[datetime] = mapped_column()
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False
+    )
     revoked: Mapped[bool] = mapped_column(default=False)
 

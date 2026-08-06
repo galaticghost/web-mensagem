@@ -16,7 +16,6 @@ class UserService:
         self.user_repository = UserRepository()
         self.refresh_token_repository = RefreshTokenRepository()
 
-
     """
     Verifica se o email ou nome de usuário já existem no banco.
     Senão existirem é criado um novo usuário.
@@ -159,7 +158,7 @@ class UserService:
                 detail="TOKEN_EXPIRED"
             )
 
-        user_id = int(payload.sub)
+        user_id = int(payload.get("sub"))
 
         if stored_token.user_id != user_id:
             raise HTTPException(
@@ -206,6 +205,9 @@ class UserService:
 
         return access_token, refresh_token
 
+    """
+    Valida o token de refresh.
+    """
     def _validate_refresh_token(
             self,
             refresh_token: str
@@ -223,8 +225,10 @@ class UserService:
                 detail="INVALID_TOKEN"
             )
 
-        if payload.type != "refresh":
+        if payload.get("type") != "refresh":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="INVALID_TOKEN_TYPE"
             )
+
+        return payload

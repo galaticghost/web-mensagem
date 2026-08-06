@@ -24,6 +24,9 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);// TODO Debounce
+        if (e.target.value.length < 3) {
+            setSearchedUsers([]);
+        }
         if (e.target.value.length > 2) {
             try {
                 setSearchedUsers(await searchUsers(e.target.value));
