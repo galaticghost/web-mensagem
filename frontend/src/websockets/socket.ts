@@ -51,7 +51,7 @@ class WebSocketService {
 
     onMessage(callback: (data: ReceivedMessage) => void) {
         if (!this.websocket) {
-            // Isso daqui meio que quebra e não permite a reconexão
+            //Isso daqui meio que quebra e não permite a reconexão
             //throw new Error("WebSocket não conectado");
             return
         }

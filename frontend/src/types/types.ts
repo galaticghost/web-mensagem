@@ -20,6 +20,7 @@ export type AuthContextType = {
     user: User | null;
     accessToken: string | null;
     tokenType: string | null;
+    refreshToken: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     register: (formData: UserRegister) => Promise<void>;

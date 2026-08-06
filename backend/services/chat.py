@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException,status
 from sqlalchemy.orm import Session
 
 from repository import ChatRepository,UserRepository,MessageRepository 
@@ -24,7 +24,7 @@ class ChatService:
 
         if data.user_id == current_user.id:
             raise HTTPException(
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="CANNOT_CHAT_WITH_YOURSELF"
             )
         
@@ -34,13 +34,13 @@ class ChatService:
             user_id_2=data.user_id
         ) is not None:
             raise HTTPException(
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="CHAT_ALREADY_EXISTS"
             )
         
         if self.user_repository.get_by_id(session,data.user_id) is None:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail="USER_NOT_FOUND"
             )
             
@@ -71,7 +71,7 @@ class ChatService:
             chat_id=chat_id
         ):
             raise HTTPException(
-                status_code=403,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail="USER_NOT_IN_CHAT"
             )
 

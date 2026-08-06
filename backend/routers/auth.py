@@ -27,7 +27,7 @@ async def register(
     return user_service.register(session,data)
 
 @router.post("/refresh", status_code=status.HTTP_200_OK)
-async def refresh_token(
+async def refresh(
     data: RefreshRequest,
     session: Session = Depends(get_session)
 ):

@@ -7,6 +7,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [tokenType, setTokenType] = useState<string | null>(null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const isAuthenticated = !!accessToken;
@@ -15,11 +16,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = localStorage.getItem("access_token");
         const storedUser = localStorage.getItem("user");
         const storedTokenType = localStorage.getItem("token_type");
+        const refreshToken = localStorage.getItem("refresh_token")
 
-        if (token && storedUser) {
+        if (token && storedUser && refreshToken) {
             setAccessToken(token);
             setTokenType(storedTokenType);
             setUser(JSON.parse(storedUser));
+            setRefreshToken(refreshToken);
         }
         setIsLoading(false);
     }, [])
@@ -45,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("token_type", data.token_type);
-        //localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("refresh_token", data.refresh_token);
         localStorage.setItem("user", JSON.stringify(data.user));
     }
 
@@ -62,10 +65,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setAccessToken(null);
         setTokenType(null);
+        setRefreshToken(null);
 
         localStorage.removeItem("access_token");
         localStorage.removeItem("token_type");
-        //localStorage.removeItem("refresh");
+        localStorage.removeItem("refresh");
         localStorage.removeItem("user");
     }
 
@@ -75,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 accessToken,
                 tokenType,
+                refreshToken,
                 isAuthenticated,
                 isLoading,
                 register,
