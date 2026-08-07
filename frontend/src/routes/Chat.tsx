@@ -7,6 +7,7 @@ export default function Chat() {
     const [selectedChat, setSelectedChat] = useState<number | null>(null);
 
     return (
+
         <main className="chat">
             <ChatSidebar
                 onSelectChat={setSelectedChat}

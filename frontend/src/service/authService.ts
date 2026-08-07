@@ -40,6 +40,36 @@ export async function login(credentials: UserLogin) {
     }
 }
 
+export async function logout(refreshToken: string) {
+    const url = "http://127.0.0.1:8000/api/auth/logout";
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                refresh_token: refreshToken
+            })
+        });
+
+        const data = await response.json();
+
+        console.log("STATUS:", response.status);
+        console.log("RESPONSE:", data);
+        if (!response.ok) { throw new Error(data.detail || "Erro ao fazer logout") }
+
+        return data;
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+        throw error;
+    }
+}
+
+
 export async function refresh(refreshToken: string) {
     const url = "http://127.0.0.1:8000/api/auth/refresh";
     try {

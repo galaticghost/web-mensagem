@@ -55,6 +55,5 @@ npm run dev
 
 ## Próximas melhorias
 
-- Implementação de refresh token
-- Implementação de logout no frontend
+- Melhorar a implementação do refresh no websocket
 - Melhorias na interface do usuário

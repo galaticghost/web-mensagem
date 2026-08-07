@@ -13,7 +13,7 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
     const [message, setMessage] = useState<string>("")
     const [messages, setMessages] = useState<ReceivedMessage[]>([]);
     const { user } = useAuth();
-    console.log(user?.id);
+
     useEffect(() => {
         loadHistory();
     }, [chatId]);
@@ -23,7 +23,6 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
             return
         }
         const data = await getMessageHistory(chatId);
-        console.log(data.messages);
         setMessages(data.messages);
     }
 
@@ -33,12 +32,12 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
         })
     }, []);
 
-    const handleMessageSend = async () => {
-        if (chatId === null) {
+    const handleMessageSend = () => {
+        if (chatId === null || message === "") {
             return;
         }
 
-        await websocket.sendMessage({
+        websocket.sendMessage({
             "message": message,
             "chatId": chatId
         });

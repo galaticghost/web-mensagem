@@ -1,9 +1,10 @@
-from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect, HTTPException
 from sqlalchemy.orm import Session
 
 from security.dependencies import get_user_from_token
 from services.message import MessageService
 from services.chat import ChatService
+from services.user import UserService
 from database.database import get_session
 from ws.connection_manager import connection_manager
 from errors import MessageError,ChatError
@@ -15,6 +16,7 @@ router = APIRouter(
 
 message_service = MessageService()
 chat_service = ChatService()
+user_service = UserService()
 
 @router.websocket("/user")
 async def websocket(
@@ -47,13 +49,22 @@ async def websocket(
         while True:
             data = await websocket.receive_json()
 
-            match (data["type"]):
+            message_type = data.get("type")
+
+            if message_type is None:
+                await websocket.send_json({
+                    "type": "error",
+                    "code": "INVALID_MESSAGE"
+                })
+                continue
+
+            match (message_type):
                 case "message":
                     try:
                         message = message_service.send_message(
                             session=session,
-                            content=data["message"],
-                            chat_id=data["chat_id"],
+                            content=data["content"]["message"],
+                            chat_id=data["content"]["chat_id"],
                             user=user
                         )
                     except MessageError as e:
@@ -70,7 +81,7 @@ async def websocket(
 
                     users = chat_service.get_users_in_chat(
                         session=session,
-                        chat_id=data["chat_id"]
+                        chat_id=data["content"]["chat_id"]
                     )
 
                     await connection_manager.send_to_chat_members(

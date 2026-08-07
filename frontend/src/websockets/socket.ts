@@ -1,8 +1,10 @@
+import { refresh } from "../service/authService";
 import type { SendMessage, ReceivedMessage } from "../types/types";
 
 class WebSocketService {
     private websocket: WebSocket | null = null
     private accessToken: string | null = null;
+    private messageCallback?: (msg: ReceivedMessage) => void;
 
     connect(access_token: string) {
         this.accessToken = access_token;
@@ -18,9 +20,14 @@ class WebSocketService {
             console.log("Websocket conectado");
         }
 
-        this.websocket.onclose = () => {
+        this.websocket.onclose = async (ev: CloseEvent) => {
             console.log("Websocket desconectado");
             this.websocket = null
+            console.log(ev.reason)
+            if (ev.reason === "TOKEN_EXPIRED") {
+                await this.reconnect();
+                return
+            }
             setTimeout(() => {
                 if (this.accessToken) {
                     this.connect(this.accessToken);
@@ -31,6 +38,38 @@ class WebSocketService {
         this.websocket.onerror = (error) => {
             console.error("Erro no websocket", error);
         };
+
+        this.websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            switch (data.type) {
+                case "message":
+                    this.messageCallback?.(data);
+                    break;
+            }
+        }
+
+    }
+
+    async reconnect() {
+        const refreshToken = localStorage.getItem("refresh_token");
+        try {
+            if (refreshToken === null) {
+                throw new Error("NO_REFRESH_TOKEN");
+            }
+
+            const tokens = await refresh(refreshToken);
+
+            localStorage.setItem("access_token", tokens.access_token);
+            localStorage.setItem("refresh_token", tokens.refresh_token);
+            localStorage.setItem("token_type", tokens.token_type);
+
+            this.connect(tokens.access_token);
+            return
+        } catch {
+            localStorage.clear();
+            window.location.href = "/auth/login"; // mudar para router TODO
+        }
     }
 
     disconnect() {
@@ -43,41 +82,19 @@ class WebSocketService {
         if (!this.websocket) {
             throw new Error("WebSocket não conectado");
         }
+
         this.websocket.send(JSON.stringify({
-                "type":"message",
-                "content":{
-                    "message": data.message,
-                    "chat_id": data.chatId
-                }
-        
+            "type": "message",
+            "content": {
+                "message": data.message,
+                "chat_id": data.chatId
+            }
+
         }))
     }
 
-    sendToken() {
-        if (!this.websocket) {
-            throw new Error("WebSocket não conectado");
-        }
-        const refreshToken = localStorage.getItem("refresh_token");
-
-        this.websocket.send(JSON.stringify({
-                "type":"refresh",
-                "content":{
-                    "refresh_token": refreshToken
-                }
-            })
-        )
-    }
-
-    onMessage(callback: (data: ReceivedMessage) => void) {
-        if (!this.websocket) {
-            //Isso daqui meio que quebra e não permite a reconexão
-            //throw new Error("WebSocket não conectado");
-            return
-        }
-        this.websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            callback(data);
-        };
+    onMessage(callback: (msg: ReceivedMessage) => void) {
+        this.messageCallback = callback;
     }
 }
 

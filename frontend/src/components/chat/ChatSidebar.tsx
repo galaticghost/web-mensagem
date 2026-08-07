@@ -3,6 +3,7 @@ import { searchUsers } from "../../service/userService";
 import { createPrivateChat, getUserChats } from "../../service/chatService";
 import "../../styles/chatSidebar.css";
 import type { User, Chat } from "../../types/types";
+import { useAuth } from "../../hooks/useAuth";
 
 interface ChatSidebarProps {
     onSelectChat: (id: number) => void;
@@ -12,6 +13,7 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
     const [username, setUsername] = useState<string>("");
     const [searchedUsers, setSearchedUsers] = useState<User[] | null>(null);
     const [chats, setChats] = useState<Chat[] | null>(null);
+    const { logout } = useAuth();
 
     const loadChats = async () => {
         const data = await getUserChats();
@@ -47,6 +49,7 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
 
     return (
         <section className="chat-sidebar">
+            <button onClick={logout}>Logout</button>
             <section>
                 <label htmlFor="add">Adicione alguem</label>
                 <input type="text" name="add" value={username}

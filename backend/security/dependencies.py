@@ -73,5 +73,8 @@ def get_user_from_token(
         return None
 
     user = user_repository.get_by_id(session, int(user_id))
+
+    if user is None:
+        return None
     
     return user

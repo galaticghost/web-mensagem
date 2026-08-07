@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, type ReactNode } from "react";
-import { login as loginRequest, register as registerRequest } from "../service/authService";
+import { login as loginRequest, register as registerRequest, logout as logoutRequest } from "../service/authService";
 import { websocket } from "../websockets/socket";
 import type { User, AuthContextType, UserLogin, UserRegister } from "../types/types";
 
@@ -61,16 +61,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
     }
 
-    function logout() {
-        setUser(null);
-        setAccessToken(null);
-        setTokenType(null);
-        setRefreshToken(null);
+    async function logout() {
+        const refreshToken = localStorage.getItem("refresh_token");
+        if (!refreshToken) {
+            setUser(null);
+            setAccessToken(null);
+            setTokenType(null);
+            setRefreshToken(null);
+            localStorage.clear();
+            return;
+        }
+        try {
+            await logoutRequest(refreshToken);
+        } finally {
+            setUser(null);
+            setAccessToken(null);
+            setTokenType(null);
+            setRefreshToken(null);
 
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("token_type");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("user");
+            localStorage.clear();
+            websocket.disconnect();
+        }
     }
 
     return (

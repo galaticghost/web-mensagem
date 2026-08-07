@@ -26,6 +26,16 @@ async def register(
 ):
     return user_service.register(session,request)
 
+@router.post("/logout",status_code=status.HTTP_200_OK)
+async def logout(
+    refresh_token: RefreshRequest,
+    session:Session = Depends(get_session),
+):
+    return user_service.logout(
+        session=session,
+        refresh_token=refresh_token.refresh_token
+)
+
 @router.post("/refresh", status_code=status.HTTP_200_OK)
 async def refresh(
     request: RefreshRequest,

@@ -8,7 +8,6 @@ export async function createPrivateChat(userId: number) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `${localStorage.getItem("token_type")} ${localStorage.getItem("access_token")}`
         },
         body: JSON.stringify({
             user_id: userId // id do usuário que se queira criar um chat

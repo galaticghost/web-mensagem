@@ -4,7 +4,6 @@ export default function AuthLayout() {
     return (
         <main>
             <div>
-                <p> teste </p>
                 <nav>
                     <Link to="/auth/login">Login</Link>
                     <Link to="/auth/register">Register</Link>

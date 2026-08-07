@@ -1,6 +1,7 @@
 from fastapi import WebSocket
 
 from models import User, Message
+from schema import RefreshResponse
 
 class ConnectionManager:
     def __init__(self):
@@ -9,6 +10,7 @@ class ConnectionManager:
     async def connect(self,websocket: WebSocket, user_id: int):
         await websocket.accept()
         self.active_connections.setdefault(user_id,[]).append(websocket)
+
 
     def disconnect(self,websocket: WebSocket, user_id: int):
         ws_list = self.active_connections.get(user_id)
@@ -31,9 +33,10 @@ class ConnectionManager:
             ws_list = self.active_connections.get(user.id)
             if ws_list is None:
                 continue
-            for ws_conn in ws_list:
+            for ws_conn in ws_list.copy():
                 try:
                     await ws_conn.send_json({
+                        "type": "message",
                         "id": message.id,
                         "message": message.message,
                         "chat_id": message.chat_id,
