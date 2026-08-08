@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { searchUsers } from "../../service/userService";
 import { createPrivateChat, getUserChats } from "../../service/chatService";
+import { debounce } from "../../utils/utils"
 import "../../styles/chatSidebar.css";
 import type { User, Chat } from "../../types/types";
-import { useAuth } from "../../hooks/useAuth";
+import ChatItem from "./ChatItem";
+import ChatHeader from "./ChatHeader";
 
 interface ChatSidebarProps {
     onSelectChat: (id: number) => void;
@@ -13,7 +15,7 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
     const [username, setUsername] = useState<string>("");
     const [searchedUsers, setSearchedUsers] = useState<User[] | null>(null);
     const [chats, setChats] = useState<Chat[] | null>(null);
-    const { logout } = useAuth();
+    const [search, setSearch] = useState<string>("");
 
     const loadChats = async () => {
         const data = await getUserChats();
@@ -21,24 +23,42 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
     }
 
     useEffect(() => {
+        if (chats && search) {
+            const filterChats = chats.filter((chat) => 
+                chat.display_name.toLowerCase().includes(search.toLowerCase())
+            )
+            console.log(filterChats)
+        }
+    },[search])
+
+    useEffect(() => {
         loadChats();
     }, []);
 
-    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUsername(e.target.value);// TODO Debounce
-        if (e.target.value.length < 3) {
-            setSearchedUsers([]);
+    useEffect(() => {
+       if (username.length < 3) { 
+            setSearchedUsers([]); 
+            return; 
         }
-        if (e.target.value.length > 2) {
+        handleSearch(username);
+    },[username])
+
+    const handleSearch = useCallback(
+        debounce(async (value: string) => {
             try {
-                setSearchedUsers(await searchUsers(e.target.value));
-            } catch (error: unknown) {
-                if (error instanceof Error) {
-                    console.error(error.message);
-                }
+                if (value.length < 3){
+                    return;
+                } 
+                const users = await searchUsers(value);
+                setSearchedUsers(users); 
+            } catch (error: unknown) { 
+                if (error instanceof Error) { 
+                    console.error(error.message); 
+                } 
             }
-        }
-    }
+        }),
+        []
+    );  
 
     const handleAddUser = async (id: number) => {
         await createPrivateChat(id);
@@ -48,19 +68,22 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
     }
 
     return (
-        <section className="chat-sidebar">
-            <button onClick={logout}>Logout</button>
+        <aside className="chat-sidebar">
+            <ChatHeader
+                search={search}
+                setSearch={setSearch}
+            />
             <section>
                 <label htmlFor="add">Adicione alguem</label>
                 <input type="text" name="add" value={username}
-                    onChange={handleChange} />
+                    onChange={(e) => setUsername(e.target.value)} />
                 {searchedUsers &&
                     <ul>
                         {searchedUsers.map((user) => (
-                            <li key={user.id}>
-                                <p>{user.username}</p>
-                                <button onClick={() => handleAddUser(user.id)}>Add</button>
-                            </li>
+                            <ChatItem
+                            user={user}
+                            handleAddUser={handleAddUser}
+                            />
                         ))}
                     </ul>
                 }
@@ -78,6 +101,6 @@ export default function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
                     </ul>
                 }
             </section>
-        </section>
+        </aside>
     )
 }

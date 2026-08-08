@@ -41,9 +41,9 @@ class WebSocketService {
 
         this.websocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-
             switch (data.type) {
                 case "message":
+                    console.log(data);
                     this.messageCallback?.(data);
                     break;
             }
