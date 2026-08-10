@@ -1,6 +1,6 @@
 from .user import UserCreate, UserResponse
 from .auth import UserLogin, LoginResponse, RefreshRequest, RefreshResponse
-from .chat import ChatListResponse, ChatListItem,CreatePrivateChat,ChatReponse
+from .chat import ChatListResponse, ChatListItem,CreatePrivateChat,ChatReponse,CreateGroupChat
 from .message import MessageListResponse, MessageListItem,SendMessage
 
 __all__ = [
@@ -10,11 +10,12 @@ __all__ = [
     "LoginResponse",
     "RefreshRequest",
     "RefreshResponse",
-    "CreatePrivateChat"
+    "CreatePrivateChat",
     "ChatListItem",
     "ChatListResponse",
-    "ChatReponse"
+    "ChatReponse",
     "MessageListItem",
     "MessageListResponse",
-    "SendMessage"
+    "SendMessage",
+    "CreateGroupChat",
 ]

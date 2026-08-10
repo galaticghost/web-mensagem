@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
 
 from security.dependencies import get_current_user
-from schema import CreatePrivateChat, ChatListResponse,MessageListResponse
+from schema import CreatePrivateChat, ChatListResponse,MessageListResponse,CreateGroupChat
 from models import User
 from services.chat import ChatService
 from database.database import get_session
@@ -21,6 +21,18 @@ async def create_private_chat(
     session: Session = Depends(get_session)
 ):
     return chat_service.create_private_chat(
+        session=session,
+        other_user_id=data.user_id,
+        current_user=current_user
+    )
+
+@router.post("/group",status_code=status.HTTP_201_CREATED)
+async def create_group_chat(
+    data: CreateGroupChat,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    return chat_service.create_group_chat(
         session=session,
         data=data,
         current_user=current_user

@@ -41,6 +41,51 @@ class ChatRepository:
         return chat
 
     """
+    Cria um grupo com base numa lista de ids de usuários mais o criador
+    """
+    def create_group_chat(
+            self,
+            session: Session,
+            creator_id: int,
+            members_id: list[int],
+            name: str,
+            description: str,
+    ) -> Chat:
+        chat = Chat(
+            name = name,
+            description=description,
+            type=ChatType.GROUP,
+            created_by_id=creator_id
+        )
+        
+        session.add(chat)
+        #O flush envia o chat para o banco de dados, que gera um id para o chat
+        session.flush()
+
+        chat_members = [
+            ChatMember(
+                chat_id=chat.id,
+                user_id=member_id,
+                is_admin=False
+            ) 
+            for member_id in members_id
+        ]
+
+        chat_members.append(
+            ChatMember(
+                chat_id=chat.id,
+                user_id=creator_id,
+                is_admin=True
+            )
+        )
+
+        session.add_all(chat_members)
+
+        session.commit()
+        
+        return chat
+
+    """
     Encontra um chat privado usando o id dos dois usuários.
     """
     def find_private_chat_between_users(

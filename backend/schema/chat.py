@@ -5,6 +5,11 @@ from models import ChatType
 class CreatePrivateChat(BaseModel):
     user_id: int
 
+class CreateGroupChat(BaseModel):
+    user_ids: list[int]
+    name: str
+    description: str
+
 class ChatReponse(BaseModel):
     id: int
     display_name: str
@@ -18,6 +23,7 @@ class ChatListItem(BaseModel):
     type: ChatType
     display_name: str
     description: str | None
+    users_id: list[int]
 
 class ChatListResponse(BaseModel):
     chats: list[ChatListItem]

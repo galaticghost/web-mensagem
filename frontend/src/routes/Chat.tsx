@@ -2,9 +2,10 @@ import { useState } from "react";
 import ChatSidebar from "../components/chat/ChatSidebar"
 import ChatWindow from "../components/chat/ChatWindow"
 import '../styles/chat.css';
+import type { Chat } from "../types/types";
 
 export default function Chat() {
-    const [selectedChat, setSelectedChat] = useState<number | null>(null);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 
     return (
 
@@ -13,7 +14,7 @@ export default function Chat() {
                 onSelectChat={setSelectedChat}
             />
             <ChatWindow
-                chatId={selectedChat}
+                chat={selectedChat}
             />
         </main>
     )

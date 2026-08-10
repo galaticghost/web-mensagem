@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from repository import ChatRepository,UserRepository,MessageRepository 
 from models import User,ChatType
-from schema import CreatePrivateChat,ChatListResponse, ChatListItem,MessageListItem, MessageListResponse
+from schema import ChatListResponse, ChatListItem,MessageListItem, MessageListResponse,CreateGroupChat
 
 class ChatService:
     def __init__(self):
@@ -19,10 +19,16 @@ class ChatService:
             self, 
             session: Session, 
             current_user: User,
-            data: CreatePrivateChat
+            other_user_id: int
         ):
 
-        if data.user_id == current_user.id:
+        if other_user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CANNOT_CREATE_CHAT_ALONE"
+            )
+
+        if other_user_id == current_user.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="CANNOT_CHAT_WITH_YOURSELF"
@@ -31,14 +37,14 @@ class ChatService:
         if self.chat_repository.find_private_chat_between_users(
             session=session,
             user_id_1=current_user.id,
-            user_id_2=data.user_id
+            user_id_2=other_user_id
         ) is not None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="CHAT_ALREADY_EXISTS"
             )
         
-        if self.user_repository.get_by_id(session,data.user_id) is None:
+        if self.user_repository.get_by_id(session,other_user_id) is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="USER_NOT_FOUND"
@@ -47,13 +53,57 @@ class ChatService:
         chat = self.chat_repository.create_private_chat(
             session=session,
             creator_id=current_user.id,
-            other_user_id=data.user_id
+            other_user_id=other_user_id
         )
     
-        return {
+        return { #TODO
             "message":"Chat criado com sucesso",
             "chat_id":chat.id
         }
+
+    def create_group_chat(
+            self,
+            session: Session,
+            data: CreateGroupChat,
+            current_user: User
+    ):
+        if data.user_ids is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CANNOT_CREATE_CHAT_ALONE"
+            )
+
+        if current_user.id in data.user_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CREATOR_ALREADY_IN_MEMBERS"
+            )
+        if len(data.user_ids) != len(set(data.user_ids)):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="REPEATED_ID"
+            )
+
+        for user_id in data.user_ids:
+            if self.user_repository.get_by_id(session,user_id) is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="USER_NOT_FOUND"
+                )
+        
+        chat = self.chat_repository.create_group_chat(
+            session=session,
+            creator_id=current_user.id,
+            members_id=data.user_ids,
+            name=data.name,
+            description=data.description
+        )
+
+        return { #TODO
+            "message":"Chat criado com sucesso",
+            "chat_id":chat.id
+        }
+        
 
     """
     Pega as mensagens passadas de um chat em que
@@ -136,7 +186,8 @@ class ChatService:
                     id=chat.id,
                     description=chat.description,
                     type=chat.type,
-                    display_name=display_name
+                    display_name=display_name,
+                    users_id=[member.user_id for member in chat.members]
                 )
             )
 

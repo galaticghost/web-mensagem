@@ -56,4 +56,5 @@ npm run dev
 ## Próximas melhorias
 
 - Melhorar a implementação do refresh no websocket
+- Adicionar e remover usuários em grupos já criados
 - Melhorias na interface do usuário

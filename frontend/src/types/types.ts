@@ -46,5 +46,6 @@ export type Chat = {
     type: string;
     display_name: string;
     description: string | null;
+    users_id: number[]
 }
 
