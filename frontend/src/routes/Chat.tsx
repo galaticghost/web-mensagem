@@ -11,7 +11,8 @@ export default function Chat() {
 
         <main className="chat">
             <ChatSidebar
-                onSelectChat={setSelectedChat}
+                setChat={setSelectedChat}
+                chatId={selectedChat?.id}
             />
             <ChatWindow
                 chat={selectedChat}

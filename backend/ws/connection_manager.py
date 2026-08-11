@@ -37,11 +37,13 @@ class ConnectionManager:
                 try:
                     await ws_conn.send_json({
                         "type": "message",
-                        "id": message.id,
-                        "message": message.message,
-                        "chat_id": message.chat_id,
-                        "sender_id": message.sender_id,
-                        "created_at": message.created_at.isoformat()
+                        "content" : {
+                            "id": message.id,
+                            "message": message.message,
+                            "chat_id": message.chat_id,
+                            "sender_id": message.sender_id,
+                            "created_at": message.created_at.isoformat()
+                        }
                     })
                 except Exception:
                     self.disconnect(ws_conn, user.id)

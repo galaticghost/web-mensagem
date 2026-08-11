@@ -33,6 +33,16 @@ export type SendMessage = {
     chatId: number;
 }
 
+export type WebsocketMessage = {
+    type: string;
+    content: ReceivedMessage
+}
+
+export type Notification = {
+    chatId: number;
+    count: number;
+}
+
 export type ReceivedMessage = {
     id: number;
     message: string;

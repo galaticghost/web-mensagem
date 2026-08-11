@@ -1,10 +1,11 @@
 import { refresh } from "../service/authService";
-import type { SendMessage, ReceivedMessage } from "../types/types";
+import type { SendMessage, ReceivedMessage, ReceivedNotification } from "../types/types";
 
 class WebSocketService {
     private websocket: WebSocket | null = null
     private accessToken: string | null = null;
     private messageCallback?: (msg: ReceivedMessage) => void;
+    private notificationCallback?: (data: ReceivedMessage) => void;
 
     connect(access_token: string) {
         this.accessToken = access_token;
@@ -43,12 +44,15 @@ class WebSocketService {
             const data = JSON.parse(event.data);
             switch (data.type) {
                 case "message":
+                    this.messageCallback?.(data.content);
+                    break;
+
+                case "notification":
                     console.log(data);
-                    this.messageCallback?.(data);
+                    this.notificationCallback?.(data);
                     break;
             }
         }
-
     }
 
     async reconnect() {
@@ -95,6 +99,10 @@ class WebSocketService {
 
     onMessage(callback: (msg: ReceivedMessage) => void) {
         this.messageCallback = callback;
+    }
+
+    onNotification(callback: (notification: ReceivedMessage) => void) {
+        this.notificationCallback = callback
     }
 }
 
