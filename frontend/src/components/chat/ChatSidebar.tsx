@@ -76,7 +76,7 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
                 loadChats={loadChats}
             />
             <section>
-
+                <h1>Conversas</h1>
                 {searchedChats.length > 0 && chats ?
                     <ul>
                         {searchedChats.map((chat) => (

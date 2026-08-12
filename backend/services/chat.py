@@ -120,6 +120,21 @@ class ChatService:
             description=data.description
         )
 
+        chat_item = self._build_chat_list_item(
+            chat=chat,
+            user=data.user_ids
+        )
+
+        data = {
+            "type": "new_chat",
+            "content":  chat_item.model_dump(mode="json")
+        }
+
+        await connection_manager.send_to_users(
+            users_id=[data.user_ids],
+            data=data
+        )
+
         return { #TODO
             "message":"Chat criado com sucesso",
             "chat_id":chat.id
