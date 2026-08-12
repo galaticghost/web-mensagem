@@ -14,8 +14,8 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [search, setSearch] = useState<string>("");
     const [searchedChats, setSearchedChats] = useState<Chat[]>([]);
-//    const [notifications, setNotifications] = useState<Notification[]>([]);
-    
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
     const loadChats = async () => {
         const data = await getUserChats();
         setChats(data.chats);
@@ -39,15 +39,33 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
     }, []);
 
     useEffect(() => {
-        websocket.onNotification((message) => {
-            if (chatId && message.chat_id !== chatId) {
-                const notification = {
-                    
-                }
-                //setNotifications((prev) => [...prev, notification]);
+        websocket.onNotification((data) => {
+            switch (data.type) {
+                case "new_chat":
+                    setChats((prev) => [data.content, ...prev]);
+                    break
+                case "message":
+                    setChats((prev) => {
+                        const chat = prev.find(
+                            (chat) => chat.id === data.content.chat_id
+                        )
+
+                        if (!chat) {
+                            return prev;
+                        }
+
+                        return [
+                            chat,
+                            ...prev.filter(
+                                (chat) => chat.id !== data.content.chat_id
+                            )
+                        ]
+                    }
+                    )
+                    break
             }
         })
-    },[])
+    }, [])
 
     return (
         <aside className="chat-sidebar">
@@ -59,7 +77,7 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
             />
             <section>
 
-                {searchedChats.length > 0 && chats ?           
+                {searchedChats.length > 0 && chats ?
                     <ul>
                         {searchedChats.map((chat) => (
                             <li key={chat.id}>

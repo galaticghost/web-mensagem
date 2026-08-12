@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMessageHistory } from "../../service/chatService";
 import { websocket } from "../../websockets/socket";
 import "../../styles/chatWindow.css";
-import type { Chat, ReceivedMessage } from "../../types/types";
+import type { Chat, Message, ReceivedMessage } from "../../types/types";
 import { useAuth } from "../../hooks/useAuth";
 
 interface ChatWindowProps {
@@ -11,7 +11,7 @@ interface ChatWindowProps {
 
 export default function ChatWindow({ chat }: ChatWindowProps) {
     const [message, setMessage] = useState<string>("")
-    const [messages, setMessages] = useState<ReceivedMessage[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const { user } = useAuth();
 
     useEffect(() => {
@@ -28,10 +28,16 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
     }, [chat]);
 
     useEffect(() => {
-        websocket.onMessage((message) => {
-            if (message.chat_id === chat?.id) {
-                setMessages((prev) => [...prev, message]);
+        websocket.onMessage((data) => {
+            switch (data.type) {
+                case "message":
+                    const message = data.content;
+                    if (message.chat_id === chat?.id) {
+                        setMessages((prev) => [...prev, message]);
+                    }
+                    break
             }
+
         })
     }, [chat]);
 

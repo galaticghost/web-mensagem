@@ -24,29 +24,19 @@ class ConnectionManager:
         if len(ws_list) == 0:
             del self.active_connections[user_id]
 
-    async def send_to_chat_members(
+    async def send_to_users(
             self,
-            users: list[User],
-            message: Message
+            users_id: list[int],
+            data: dict
     ):
-        for user in users:
-            ws_list = self.active_connections.get(user.id)
+        for user_id in users_id:
+            ws_list = self.active_connections.get(user_id)
             if ws_list is None:
                 continue
             for ws_conn in ws_list.copy():
                 try:
-                    await ws_conn.send_json({
-                        "type": "message",
-                        "content" : {
-                            "id": message.id,
-                            "message": message.message,
-                            "chat_id": message.chat_id,
-                            "sender_id": message.sender_id,
-                            "created_at": message.created_at.isoformat()
-                        }
-                    })
+                    await ws_conn.send_json(data)
                 except Exception:
-                    self.disconnect(ws_conn, user.id)
-
+                    self.disconnect(ws_conn, user_id)
 connection_manager = ConnectionManager()
                 

@@ -84,11 +84,24 @@ async def websocket(
                         chat_id=data["content"]["chat_id"]
                     )
 
-                    await connection_manager.send_to_chat_members(
-                        users=users,
-                        message=message
-                    )
+                    users_id =[user.id for user in users]
 
+                    data = {
+                        "type": "message",
+                        "content" : {
+                            "id": message.id,
+                            "message": message.message,
+                            "chat_id": message.chat_id,
+                            "sender_id": message.sender_id,
+                            "created_at": message.created_at.isoformat()
+                        }
+                    }
+
+                    await connection_manager.send_to_users(
+                        users_id=users_id,
+                        data=data
+                    )
+                    
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket,user.id)
         

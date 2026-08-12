@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session,selectinload
-from sqlalchemy import select,func,exists
+from sqlalchemy import select,func,exists,desc
 
 from models import Chat,ChatMember,ChatType,User
 
@@ -152,6 +152,9 @@ class ChatRepository:
                 .options(
                     selectinload(Chat.members)
                     .selectinload(ChatMember.user)
+                )
+                .order_by(
+                    desc(Chat.last_message_at),
                 )
             )
 

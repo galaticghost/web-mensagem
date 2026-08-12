@@ -20,7 +20,7 @@ async def create_private_chat(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return chat_service.create_private_chat(
+    return await chat_service.create_private_chat(
         session=session,
         other_user_id=data.user_id,
         current_user=current_user

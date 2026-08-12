@@ -1,5 +1,5 @@
 import { refresh } from "../service/authService";
-import type { SendMessage, ReceivedMessage, ReceivedNotification } from "../types/types";
+import type { SendMessage, ReceivedMessage, Message, Chat } from "../types/types";
 
 class WebSocketService {
     private websocket: WebSocket | null = null
@@ -41,14 +41,14 @@ class WebSocketService {
         };
 
         this.websocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
+            const data: ReceivedMessage = JSON.parse(event.data);
             switch (data.type) {
                 case "message":
-                    this.messageCallback?.(data.content);
+                    this.messageCallback?.(data);
+                    this.notificationCallback?.(data)
                     break;
 
-                case "notification":
-                    console.log(data);
+                case "new_chat":
                     this.notificationCallback?.(data);
                     break;
             }

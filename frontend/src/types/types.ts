@@ -43,7 +43,18 @@ export type Notification = {
     count: number;
 }
 
-export type ReceivedMessage = {
+export type ReceivedMessage =
+    | {
+        type: "new_chat";
+        content: Chat
+    }
+    | {
+        type: "message";
+        content: Message
+    }
+
+
+export type Message = {
     id: number;
     message: string;
     chat_id: number;
@@ -51,11 +62,19 @@ export type ReceivedMessage = {
     created_at: string;
 }
 
+export type ChatListResponse = {
+    chats: Chat[];
+};
+
 export type Chat = {
     id: number;
     type: string;
     display_name: string;
     description: string | null;
+    created_at: string;
+    updated_at: string;
+    last_message_id: number | null;
+    last_message_at: string
     users_id: number[]
 }
 

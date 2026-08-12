@@ -1,5 +1,6 @@
 from pydantic import BaseModel,ConfigDict
 
+from datetime import datetime
 from models import ChatType
 
 class CreatePrivateChat(BaseModel):
@@ -23,6 +24,10 @@ class ChatListItem(BaseModel):
     type: ChatType
     display_name: str
     description: str | None
+    created_at: datetime
+    updated_at: datetime
+    last_message_id: int | None
+    last_message_at: datetime | None
     users_id: list[int]
 
 class ChatListResponse(BaseModel):

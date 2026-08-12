@@ -1,7 +1,8 @@
 from __future__ import annotations
 from database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, ForeignKey, Boolean, UniqueConstraint, Enum
+from sqlalchemy import String, Text, ForeignKey, Boolean, UniqueConstraint, Enum, DateTime,func
+from datetime import datetime
 
 from models.enums import ChatType
 
@@ -31,7 +32,34 @@ class Chat(Base):
 
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    messages: Mapped[list["Message"]] = relationship(back_populates="chat")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    last_message_id: Mapped[int |  None] = mapped_column(
+        ForeignKey("messages.id"),
+        nullable=True
+    )
+
+    last_message_at: Mapped[datetime | None] = mapped_column(
+        nullable=True
+    )
+
+    messages: Mapped[list["Message"]] = relationship(
+        back_populates="chat",
+        foreign_keys="Message.chat_id"
+    )
+
+    last_message: Mapped["Message | None"] = relationship(
+        foreign_keys=[last_message_id]
+    )
 
 class ChatMember(Base):
     __tablename__ = "chat_members"

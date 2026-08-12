@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, update
 
-from models import Message
+from models import Message, Chat
 
 class MessageRepository:
     """
@@ -29,7 +29,19 @@ class MessageRepository:
         message: Message
     ) -> Message:
         session.add(message)
+        session.flush()
+
+        stmt = (update(Chat)
+            .where(
+                Chat.id == message.chat_id
+            )
+            .values(
+                last_message_id = message.id,
+                last_message_at = message.created_at,
+            )
+        )
+
+        session.execute(stmt)
         session.commit()
-        session.refresh(message)
 
         return message

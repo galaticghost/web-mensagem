@@ -1,4 +1,5 @@
 import { API_URL } from "../config";
+import type { ChatListResponse } from "../types/types";
 import { authorizedFetch } from "../utils/utils";
 
 export async function createPrivateChat(userId: number) {
@@ -35,7 +36,7 @@ export async function createGroupChat(usersId: number[], name: string, descripti
     return response.json()
 }
 
-export async function getUserChats() {
+export async function getUserChats(): Promise<ChatListResponse> {
     const url = `${API_URL}/api/chats/userchats`;
     const response = await authorizedFetch(url);
 

@@ -2,8 +2,9 @@ from fastapi import HTTPException,status
 from sqlalchemy.orm import Session
 
 from repository import ChatRepository,UserRepository,MessageRepository 
-from models import User,ChatType
+from models import User,ChatType,Chat
 from schema import ChatListResponse, ChatListItem,MessageListItem, MessageListResponse,CreateGroupChat
+from ws.connection_manager import connection_manager
 
 class ChatService:
     def __init__(self):
@@ -15,7 +16,7 @@ class ChatService:
     Cria um chat privado entre o usuário atual
     e outro usuário com base no id do outro usuário
     """
-    def create_private_chat(
+    async def create_private_chat(
             self, 
             session: Session, 
             current_user: User,
@@ -43,8 +44,13 @@ class ChatService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="CHAT_ALREADY_EXISTS"
             )
+
+        other_user = self.user_repository.get_by_id(
+            session,
+            other_user_id
+        )
         
-        if self.user_repository.get_by_id(session,other_user_id) is None:
+        if other_user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="USER_NOT_FOUND"
@@ -55,18 +61,33 @@ class ChatService:
             creator_id=current_user.id,
             other_user_id=other_user_id
         )
+
+        chat_item = self._build_chat_list_item(
+            chat=chat,
+            user=other_user
+        )
+
+        data = {
+            "type": "new_chat",
+            "content":  chat_item.model_dump(mode="json")
+        }
+
+        await connection_manager.send_to_users(
+            users_id=[other_user_id],
+            data=data
+        )
     
         return { #TODO
             "message":"Chat criado com sucesso",
             "chat_id":chat.id
         }
 
-    def create_group_chat(
+    async def create_group_chat(
             self,
             session: Session,
             data: CreateGroupChat,
             current_user: User
-    ):
+        ):
         if data.user_ids is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -114,7 +135,7 @@ class ChatService:
             session: Session,
             chat_id: int,
             current_user: User
-    ):
+        ):
         if not self.chat_repository.user_exists_in_chat(
             session=session,
             user_id=current_user.id,
@@ -149,12 +170,12 @@ class ChatService:
             self,
             session: Session,
             chat_id: int
-    ) -> list[User]:
+        ) -> list[User]:
         return self.chat_repository.get_users_in_chat(
             session=session,
             chat_id=chat_id
         )
-
+	
     """
     Retorna os chats do usuário
     """
@@ -162,33 +183,43 @@ class ChatService:
             self,
             session: Session,
             user: User
-    ):
+        ):
         chats = self.chat_repository.get_user_chats(
             session=session,
             user_id=user.id
         )
 
-        chat_items = []
+        return ChatListResponse(
+            chats=[
+                self._build_chat_list_item(chat, user)
+                for chat in chats
+            ]
+        )
 
-        for chat in chats:
-            #Caso o chat seja privado o nome do chat será do outro usuário
-            #Isso porque um chat privado não tem nome na database
-            if chat.type == ChatType.PRIVATE:
-                for member in chat.members:
-                    if user.id != member.user_id:
-                        display_name = member.user.username
-                        break
-            else:
-                display_name = chat.name
+    def _build_chat_list_item(
+            self,
+            chat: Chat,
+            user: User
+        ) -> ChatListItem:
 
-            chat_items.append(
-                ChatListItem(
-                    id=chat.id,
-                    description=chat.description,
-                    type=chat.type,
-                    display_name=display_name,
-                    users_id=[member.user_id for member in chat.members]
-                )
-            )
+        #Caso o chat seja privado o nome do chat será do outro usuário
+        #Isso porque um chat privado não tem nome na database
+        if chat.type == ChatType.PRIVATE:
+            for member in chat.members:
+                if member.user_id != user.id:
+                    display_name = member.user.username
+                    break
+        else:
+            display_name = chat.name
 
-        return ChatListResponse(chats=chat_items)
+        return ChatListItem(
+            id=chat.id,
+            description=chat.description,
+            type=chat.type,
+            display_name=display_name,
+            created_at=chat.created_at,
+            updated_at=chat.updated_at,
+            last_message_id=chat.last_message_id,
+            last_message_at=chat.last_message_at,
+            users_id=[member.user_id for member in chat.members]
+        )

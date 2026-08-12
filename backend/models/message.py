@@ -1,8 +1,8 @@
 from __future__ import annotations
 from database.database import Base
-from sqlalchemy import String, DateTime,ForeignKey
+from sqlalchemy import String, DateTime,ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime, UTC
+from datetime import datetime
 
 class Message(Base):
     __tablename__ = "messages"
@@ -16,17 +16,15 @@ class Message(Base):
         nullable=False
     )
 
-    #O now é executado apenas quando o python importa o arquivo e
-    #como consequência a data fica congelada.
-    #O lambda executa cada vez que for criado um novo dado.
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(UTC)
+        server_default=func.now()
     )
 
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"))
 
-    chat: Mapped["Chat"] = relationship(back_populates="messages")
+    chat: Mapped["Chat"] = relationship(back_populates="messages",
+                                            foreign_keys=[chat_id])
 
     sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
