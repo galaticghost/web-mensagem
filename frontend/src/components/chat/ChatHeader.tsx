@@ -1,8 +1,7 @@
 import SearchChatBar from "./SearchChatBar";
-import { useAuth } from "../../hooks/useAuth";
-import { useState } from "react";
 import Modal from "../Modal";
 import AddChat from "./AddChat";
+import { useState } from "react";
 import type { Chat } from "../../types/types";
 import CreateGroup from "./CreateGroup";
 
@@ -14,7 +13,6 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ search, setSearch, loadChats, chats }: ChatHeaderProps) {
-    const { logout } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isCreatePrivate, setIsCreatePrivate] = useState<boolean>(true);
 
@@ -29,11 +27,10 @@ export default function ChatHeader({ search, setSearch, loadChats, chats }: Chat
     };
 
     return (
-        <section>
+        <section className="chat-header">
             <section>
                 <h2>Web-Mensagens</h2>
                 <button onClick={handleOpenModal}>AddChat</button>
-                <button onClick={logout}>Logout</button>
                 {isModalOpen &&
                     <Modal onClose={() => handleCloseModal()}>
                         {isCreatePrivate ?

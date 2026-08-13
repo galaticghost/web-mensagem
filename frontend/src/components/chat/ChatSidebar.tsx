@@ -4,6 +4,8 @@ import "../../styles/chatSidebar.css";
 import type { Chat } from "../../types/types";
 import ChatHeader from "./ChatHeader";
 import { websocket } from "../../websockets/socket";
+import ChatFooter from "./ChatFooter";
+import ChatItem from "./ChatItem";
 
 interface ChatSidebarProps {
     setChat: (chat: Chat) => void;
@@ -14,7 +16,6 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [search, setSearch] = useState<string>("");
     const [searchedChats, setSearchedChats] = useState<Chat[]>([]);
-    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const loadChats = async () => {
         const data = await getUserChats();
@@ -28,7 +29,6 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
             )
             setSearchedChats([...filterChats]);
         }
-
         if (search.length < 1) {
             setSearchedChats([]);
         }
@@ -77,27 +77,23 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
             />
             <section>
                 <h1>Conversas</h1>
+                <ul className="chat-list">
                 {searchedChats.length > 0 && chats ?
-                    <ul>
+                    <>
                         {searchedChats.map((chat) => (
-                            <li key={chat.id}>
-                                <button onClick={() => setChat(chat)}>
-                                    <p>{chat.display_name}</p>
-                                </button>
-                            </li>
+                            <ChatItem chat={chat} setChat={setChat} />
                         ))}
-                    </ul>
+                    </>
                     :
-                    <ul>
+                    <>
                         {chats.map((chat) => (
-                            <li key={chat.id}>
-                                <button onClick={() => setChat(chat)}>
-                                    <p>{chat.display_name}</p>
-                                </button>
-                            </li>
+                            <ChatItem chat={chat} setChat={setChat} />
                         ))}
-                    </ul>}
+                    </>
+                    }
+                    </ul>
             </section>
+            <ChatFooter />
         </aside>
     )
 }

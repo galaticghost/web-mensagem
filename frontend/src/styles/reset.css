@@ -57,6 +57,6 @@ button {
   padding: 0;
   cursor: pointer;
   border: none;
-  color: inherit;
+  /*color: inherit;*/
   font: inherit;
 }
