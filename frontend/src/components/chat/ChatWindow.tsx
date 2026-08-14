@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { getMessageHistory } from "../../service/chatService";
 import { websocket } from "../../websockets/socket";
 import "../../styles/chatWindow.css";
@@ -61,6 +61,12 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
         setMessage("");
     }
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            handleMessageSend()
+        }
+    }
+
     if (!chat?.id) {
         return (
             <section className="chat-window">
@@ -84,7 +90,8 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
                 <div ref={messagesEndRef} />
             </div>
             <div className="message-input">
-                <input id="message" type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
+                <input id="message" type="text" value={message} onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown} />
                 <button onClick={handleMessageSend}>enviar</button>
             </div>
 

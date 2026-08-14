@@ -97,7 +97,7 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
                         <button onClick={() => setIsSelectingUsers(false)}>{'<-'}</button>
                         <p>Adicionar participantes</p>
                         <input type="text" name="add" value={username}
-                            onChange={(e) => setUsername(e.target.value)} />
+                            onChange={(e) => setUsername(e.target.value.trim())} />
                     </div>
                     {searchedUsers.length > 0 &&
                         <ul>
@@ -133,7 +133,7 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
                         required={true}
                         minLength={3}
                         maxLength={50}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setName(e.target.value.trim())}
                         value={name}
                         placeholder="Digite o nome do grupo..."
                     />
@@ -144,7 +144,7 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
                         type="text"
                         value={description}
                         maxLength={500}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => setDescription(e.target.value.trim())}
                         placeholder="Descrição do grupo..."
                     />
                     <button onClick={goToUserSelection}>{'Próximo →'}</button>

@@ -25,7 +25,7 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
     useEffect(() => {
         if (chats && search) {
             const filterChats = chats.filter((chat) =>
-                chat.display_name.toLowerCase().includes(search.toLowerCase())
+                chat.display_name.toLowerCase().includes(search.toLowerCase().trim())
             )
             setSearchedChats([...filterChats]);
         }

@@ -75,7 +75,7 @@ export default function AddChat({ loadChats, onClose, chats, setIsCreatePrivate 
             <button onClick={changeToGroup}> CRIAR GRUPO</button>
             <input type="text" name="add" value={username}
                 className="search-bar-input"
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value.trim())}
                 placeholder="Digite um nome de usuário..." />
 
             {searchedUsers.length > 0 &&
