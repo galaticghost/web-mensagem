@@ -4,6 +4,7 @@ import AddChat from "./AddChat";
 import { useState } from "react";
 import type { Chat } from "../../types/types";
 import CreateGroup from "./CreateGroup";
+import "../../styles/chatHeader.css";
 
 interface ChatHeaderProps {
     search: string;

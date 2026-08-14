@@ -10,7 +10,7 @@ export default function SearchChatBar({ search, setSearch }: SearchChatBar) {
         <div className="search-bar">
             <img src={searchIcon} alt="Ícone de procura" className="icon" />
             <input
-                className="searchbar"
+                className="search-bar-input"
                 type="text"
                 id="chat"
                 name="chat"

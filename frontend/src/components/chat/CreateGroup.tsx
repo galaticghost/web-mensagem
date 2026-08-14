@@ -90,14 +90,15 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
     }
 
     return (
-        <section>
+        <section className="group-info">
             {isSelectingUsers ?
-                <div>
-                    <button onClick={() => setIsSelectingUsers(false)}>{'<-'}</button>
-                    <label htmlFor="add">Adicione alguem</label>
-                    <input type="text" name="add" value={username}
-                        onChange={(e) => setUsername(e.target.value)} />
-
+                <>
+                    <div className="group-navigation">
+                        <button onClick={() => setIsSelectingUsers(false)}>{'<-'}</button>
+                        <p>Adicionar participantes</p>
+                        <input type="text" name="add" value={username}
+                            onChange={(e) => setUsername(e.target.value)} />
+                    </div>
                     {searchedUsers.length > 0 &&
                         <ul>
                             {searchedUsers.map((user) => {
@@ -109,6 +110,7 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
                                         user={user}
                                         handleAddUser={handleToggleUser}
                                         added={added}
+                                        disabled={false}
                                         buttonText={added ? "Remover" : "Adicionar"}
                                     />
                                 )
@@ -116,19 +118,37 @@ export default function CreateGroup({ loadChats, onClose, setIsCreatePrivate }: 
                         </ul>
                     }
                     <button onClick={handleGroupCreation}>Criar</button>
-                </div>
+                </>
                 :
-                <div>
-                    <button onClick={changeToPrivate}>{'<-'}</button>
-                    <button onClick={goToUserSelection}>{'->'}</button>
-                    <input id="groupName" name="groupName" type="text"
-                        required={true} minLength={3} maxLength={50}
-                        onChange={(e) => setName(e.target.value)} value={name}
+                <>
+                    <div className="group-navigation">
+                        <button onClick={changeToPrivate}>{'←'}</button>
+                        <p>Criar grupo</p>
+                    </div>
+                    <label htmlFor="groupName" >Nome do grupo</label>
+                    <input
+                        id="groupName"
+                        name="groupName"
+                        type="text"
+                        required={true}
+                        minLength={3}
+                        maxLength={50}
+                        onChange={(e) => setName(e.target.value)}
+                        value={name}
+                        placeholder="Digite o nome do grupo..."
                     />
-                    <input id="groupDescription" name="groupDescription"
-                        type="text" value={description} maxLength={500}
-                        onChange={(e) => setDescription(e.target.value)} />
-                </div>
+                    <label htmlFor="groupDescription">Descrição</label>
+                    <input
+                        id="groupDescription"
+                        name="groupDescription"
+                        type="text"
+                        value={description}
+                        maxLength={500}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Descrição do grupo..."
+                    />
+                    <button onClick={goToUserSelection}>{'Próximo →'}</button>
+                </>
             }
         </section>
     )

@@ -78,20 +78,20 @@ export default function ChatSidebar({ setChat, chatId }: ChatSidebarProps) {
             <section>
                 <h1>Conversas</h1>
                 <ul className="chat-list">
-                {searchedChats.length > 0 && chats ?
-                    <>
-                        {searchedChats.map((chat) => (
-                            <ChatItem chat={chat} setChat={setChat} />
-                        ))}
-                    </>
-                    :
-                    <>
-                        {chats.map((chat) => (
-                            <ChatItem chat={chat} setChat={setChat} />
-                        ))}
-                    </>
+                    {searchedChats.length > 0 && chats ?
+                        <>
+                            {searchedChats.map((chat) => (
+                                <ChatItem key={chat.id} chat={chat} setChat={setChat} />
+                            ))}
+                        </>
+                        :
+                        <>
+                            {chats.map((chat) => (
+                                <ChatItem key={chat.id} chat={chat} setChat={setChat} />
+                            ))}
+                        </>
                     }
-                    </ul>
+                </ul>
             </section>
             <ChatFooter />
         </aside>

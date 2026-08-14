@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { getMessageHistory } from "../../service/chatService";
 import { websocket } from "../../websockets/socket";
 import "../../styles/chatWindow.css";
-import type { Chat, Message, ReceivedMessage } from "../../types/types";
+import type { Chat, Message } from "../../types/types";
 import { useAuth } from "../../hooks/useAuth";
 
 interface ChatWindowProps {
@@ -12,6 +12,7 @@ interface ChatWindowProps {
 export default function ChatWindow({ chat }: ChatWindowProps) {
     const [message, setMessage] = useState<string>("")
     const [messages, setMessages] = useState<Message[]>([]);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
 
     useEffect(() => {
@@ -26,6 +27,12 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
         }
         loadHistory();
     }, [chat]);
+
+    useLayoutEffect(() => {
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+        });
+    }, [messages]);
 
     useEffect(() => {
         websocket.onMessage((data) => {
@@ -64,7 +71,6 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
 
     return (
         <section className="chat-window">
-            Chat selecionado: {chat.id}
             <div className="message-div">
                 {messages.map((msg) => (
                     <div key={msg.id} className={
@@ -75,9 +81,13 @@ export default function ChatWindow({ chat }: ChatWindowProps) {
                         <p>{msg.message}</p>
                     </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
-            <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
-            <button onClick={handleMessageSend}>enviar</button>
+            <div className="message-input">
+                <input id="message" type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
+                <button onClick={handleMessageSend}>enviar</button>
+            </div>
+
         </section>
     )
 }

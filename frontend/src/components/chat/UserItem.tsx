@@ -3,6 +3,7 @@ import type { User } from "../../types/types";
 interface UserItemProps {
     user: User;
     added: boolean;
+    disabled: boolean;
     buttonText: string;
     handleAddUser: (id: number) => void | Promise<void>;
 }
@@ -11,6 +12,7 @@ export default function UserItem({
     user,
     added,
     buttonText,
+    disabled,
     handleAddUser
 }: UserItemProps) {
     return (
@@ -18,7 +20,7 @@ export default function UserItem({
             <p>{user.username}</p>
 
             <button
-                disabled={added}
+                disabled={disabled}
                 onClick={() => handleAddUser(user.id)}
             >
                 {buttonText}

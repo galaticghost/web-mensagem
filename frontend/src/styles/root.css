@@ -1,48 +1,48 @@
 :root {
-    --bg-primary: #0F172A;
-    --bg-secondary: #111827;
-    --bg-selected: #1E293B;
+    --color-background: #111827;
+    --color-surface: #182235;
+    --color-hover: #1E293B;
+    --color-border: #1F2937;
 
-    --border: #273449;
+    --color-text: #F8FAFC;
+    --color-text-secondary: #94A3B8;
+    --color-placeholder: #64748B;
 
-    --text-primary: #F1F5F9;
-    --text-secondary: #94A3B8;
-
-    --accent: #6366F1;
-    --accent-hover: #818CF8;
-
-    --message-own: #6366F1;
-    --message-other: #1E293B;
-
+    --color-primary: #7C3AED;
+    --color-primary-hover: #6D28D9;
+    --color-selected: #272052;
+    --color-selected-hover: #302660;
+    
+    --color-danger-background: #3f1d2b;
+    --color-danger-text: #fda4af;
 }
 
 [data-theme="light"] {
-    --bg-primary: #F5F7FA;
-    --bg-secondary: #FFFFFF;
-    --bg-selected: #EEF2FF;
+    --color-background: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-hover: #F1F5F9;
+    --color-border: #E2E8F0;
 
-    --border: #E2E8F0;
+    --color-text: #0F172A;
+    --color-text-secondary: #64748B;
+    --color-placeholder: #94A3B8;
 
-    --text-primary: #172033;
-    --text-secondary: #64748B;
-
-    --accent: #4F46E5;
-    --accent-hover: #4338CA;
-
-    --message-own: #4F46E5;
-    --message-other: #FFFFFF;
+    --color-primary: #7C3AED;
+    --color-primary-hover: #6D28D9;
+    --color-selected: #EDE9FE;
+    --color-selected-hover: #DDD6FE;
 }
 
 #root {
-    background-color: var(--bg-primary);
+    background-color: var(--color-background);
     height: 100%;
     width: 100%;
 }
 
 p {
-    color: var(--text-primary);
+    color: var(--color-text);
 }
 
 button {
-    color: var(--text-primary);
+    color: var(--color-text);
 }

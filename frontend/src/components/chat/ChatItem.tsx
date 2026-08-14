@@ -5,9 +5,9 @@ interface ChatItemProps {
     setChat: (chat: Chat) => void;
 }
 
-export default function ChatItem ({chat, setChat}: ChatItemProps) {
+export default function ChatItem({ chat, setChat }: ChatItemProps) {
     return (
-        <li key={chat.id}>
+        <li>
             <button onClick={() => setChat(chat)}>
                 <p>{chat.display_name}</p>
             </button>
